@@ -8,7 +8,7 @@ public with sharing class OfferController {
         for (Car_Posting__c newCarOffer : newCarOffers){
             for (Car_Posting__c offerPhysical : offersPhysical){
                 //Check if any element from two lists is duplicate.
-                if (newCarOffer.Vehicle__c == offerPhysical.Vehicle__c){
+                if (newCarOffer.Vehicle__c == offerPhysical.Vehicle__c && newCarOffer.Virtual__c==FALSE){
                     newCarOffer.Vehicle__c.addError('Car is already physically listed in ' + offerPhysical.Salon__r.Name + '.');
                 }
                 
