@@ -1,5 +1,6 @@
 public with sharing class OfferController {
     public static void AvoidDuplicates (List<Car_Posting__c> newCarOffers) {
+
         // Retrieve only physically listed offers in all Salons
         List<Car_Posting__c> offersPhysical = new List<Car_Posting__c>();
         offersPhysical = [SELECT Vehicle__c, Salon__r.Name FROM Car_Posting__c WHERE Virtual__c = FALSE];
@@ -14,6 +15,6 @@ public with sharing class OfferController {
                 
             }
         }
-               
+        
     }
 }
