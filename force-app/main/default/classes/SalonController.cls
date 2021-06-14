@@ -1,6 +1,19 @@
 public with sharing class SalonController {
     public static void transferToWarehouse(List<Salon__c> salons) {
-        
+
+        // Retrieve all Warehouses
+        List<Salon__c> warehouses = [SELECT Id, Account__c FROM Salon__c WHERE Warehouse__c = TRUE];
+
+        //Check if there are warehouses related to Account. If yes throw error
+        for (Salon__c salon : salons){
+            if (salon.Warehouse__c == TRUE){
+                for(Salon__c warehouse : warehouses){
+                    if (salon.Account__c == warehouse.Account__c){
+                        salon.Warehouse__c.addError('There can be only one warehouse related to specific account');
+                        }
+                    }
+            }
+        }
         //Check if any salon from list has 'Closed' as a status
         //If not exit function, If yes use another list to save on iteration
         List<Salon__c> salonsClosing = new List<Salon__c>();
@@ -15,10 +28,9 @@ public with sharing class SalonController {
 
         //Retrieve all vehicles from database
         List<Vehicle__c> vehicles = [SELECT Salon__r.Id FROM Vehicle__c];
-        //Retrieve all warehouses from database
-        List<Salon__c> warehouses = [SELECT Id, Account__c FROM Salon__c WHERE Warehouse__c = TRUE];
-
+        
         //Map warehouses to salons. Every salon has only one related account.
+        //Solution not quite elegant but I could not find other way
         Map<Salon__c,Salon__c> warehousesMapped = new Map<Salon__c,Salon__c>();
         for (Salon__c salon : salons){
             for (Salon__c warehouse : warehouses){
@@ -51,8 +63,7 @@ public with sharing class SalonController {
             }
         }
         delete carOffersToDelete;
-    }
-    public static void checkDuplicateWarehouses(List<Salon__c> salons){
-
+        
+        
     }
 }

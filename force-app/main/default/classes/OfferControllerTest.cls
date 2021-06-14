@@ -9,34 +9,34 @@ private with sharing class OfferControllerTest {
         }
         insert accs;
 
-        List<Salon__c> salonsa = new List<Salon__c>();
-        List<Salon__c> salonsb = new List<Salon__c>();
+        List<Salon__c> salonsA = new List<Salon__c>();
+        List<Salon__c> salonsB = new List<Salon__c>();
         for(Integer i=0;i<160;i++){
-            Salon__c salona = new Salon__c(Account__c=accs[i].Id, Name='salona'+i);
-            Salon__c salonb = new Salon__c(Account__c=accs[i].Id, Name='salonb'+i);
-            salonsa.add(salona);
-            salonsb.add(salonb);
+            Salon__c salonA = new Salon__c(Account__c=accs[i].Id, Name='salonA'+i);
+            Salon__c salonB = new Salon__c(Account__c=accs[i].Id, Name='salonB'+i);
+            salonsA.add(salonA);
+            salonsB.add(salonB);
         }
-        insert salonsa;
-        insert salonsb;
+        insert salonsA;
+        insert salonsB;
 
         List<Vehicle__c> vehs = new List<Vehicle__c>();
         for(Integer i=0;i<160;i++){
-            Vehicle__c veh = new Vehicle__c(Salon__c=salonsa[i].Id, Brand__c = 'Brand'+i, Car_model__c='Car Model'+i, Serial_number__c='4GHBV58MNBV852'+(i+100));
+            Vehicle__c veh = new Vehicle__c(Salon__c=salonsA[i].Id, Brand__c = 'Brand'+i, Car_model__c='Car Model'+i, Serial_number__c='4GHBV58MNBV852'+(i+100));
             vehs.add(veh);
         }
         insert vehs;
         
         List<Car_Posting__c> carOffers = new List<Car_Posting__c>();
         for(Integer i=0;i<160;i++){
-            Car_Posting__c carOffer = new Car_Posting__c(Vehicle__c=vehs[i].Id, Salon__c=salonsa[i].Id, Virtual__c=FALSE);
+            Car_Posting__c carOffer = new Car_Posting__c(Vehicle__c=vehs[i].Id, Salon__c=salonsA[i].Id, Virtual__c=FALSE);
             carOffers.add(carOffer);
         }
         insert carOffers;
 
         List<Car_Posting__c> carOffersTest = new List<Car_Posting__c>();
         for(Integer i=0;i<160;i++){
-            Car_Posting__c carOfferTest = new Car_Posting__c(Vehicle__c=vehs[i].Id, Salon__c=salonsb[i].Id, Virtual__c=FALSE);
+            Car_Posting__c carOfferTest = new Car_Posting__c(Vehicle__c=vehs[i].Id, Salon__c=salonsB[i].Id, Virtual__c=FALSE);
             carOffersTest.add(carOfferTest);
         }
 
@@ -47,7 +47,7 @@ private with sharing class OfferControllerTest {
         for(Integer i=0;i<160;i++){
             System.assert(!results[i].isSuccess());
             System.assert(results[i].getErrors().size() > 0);
-            System.assertEquals('Car is already physically listed in salona'+i+'.',
+            System.assertEquals('Car is already physically listed in salonA'+i+'.',
                              results[i].getErrors()[0].getMessage());
     }
 }
@@ -61,34 +61,34 @@ private with sharing class OfferControllerTest {
         }
         insert accs;
 
-        List<Salon__c> salonsa = new List<Salon__c>();
-        List<Salon__c> salonsb = new List<Salon__c>();
+        List<Salon__c> salonsA = new List<Salon__c>();
+        List<Salon__c> salonsB = new List<Salon__c>();
         for(Integer i=0;i<160;i++){
-            Salon__c salona = new Salon__c(Account__c=accs[i].Id, Name='salona'+i);
-            Salon__c salonb = new Salon__c(Account__c=accs[i].Id, Name='salonb'+i);
-            salonsa.add(salona);
-            salonsb.add(salonb);
+            Salon__c salonA = new Salon__c(Account__c=accs[i].Id, Name='salonA'+i);
+            Salon__c salonB = new Salon__c(Account__c=accs[i].Id, Name='salonB'+i);
+            salonsA.add(salonA);
+            salonsB.add(salonB);
         }
-        insert salonsa;
-        insert salonsb;
+        insert salonsA;
+        insert salonsB;
 
         List<Vehicle__c> vehs = new List<Vehicle__c>();
         for(Integer i=0;i<160;i++){
-            Vehicle__c veh = new Vehicle__c(Salon__c=salonsa[i].Id, Brand__c = 'Brand'+i, Car_model__c='Car Model'+i, Serial_number__c='4GHBV58MNBV852'+(i+100));
+            Vehicle__c veh = new Vehicle__c(Salon__c=salonsA[i].Id, Brand__c = 'Brand'+i, Car_model__c='Car Model'+i, Serial_number__c='4GHBV58MNBV852'+(i+100));
             vehs.add(veh);
         }
         insert vehs;
         
         List<Car_Posting__c> carOffers = new List<Car_Posting__c>();
         for(Integer i=0;i<160;i++){
-            Car_Posting__c carOffer = new Car_Posting__c(Vehicle__c=vehs[i].Id, Salon__c=salonsa[i].Id, Virtual__c=FALSE);
+            Car_Posting__c carOffer = new Car_Posting__c(Vehicle__c=vehs[i].Id, Salon__c=salonsA[i].Id, Virtual__c=FALSE);
             carOffers.add(carOffer);
         }
         insert carOffers;
 
         List<Car_Posting__c> carOffersTest = new List<Car_Posting__c>();
         for(Integer i=0;i<160;i++){
-            Car_Posting__c carOfferTest = new Car_Posting__c(Vehicle__c=vehs[i].Id, Salon__c=salonsb[i].Id, Virtual__c=TRUE);
+            Car_Posting__c carOfferTest = new Car_Posting__c(Vehicle__c=vehs[i].Id, Salon__c=salonsB[i].Id, Virtual__c=TRUE);
             carOffersTest.add(carOfferTest);
         }
 

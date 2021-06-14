@@ -149,5 +149,34 @@ private with sharing class SalonControllerTest {
         System.assert(carOffers.size() == 320);
         
     }
-    
+    @isTest static void testAddDuplicateWarehouse() {
+        //create sample data
+        List<Account> accs = new List<Account>();
+        for(Integer i=0;i<160;i++){
+            Account acc = new Account(Name='acc'+i);
+            accs.add(acc);
+        }
+        insert accs;
+
+        List<Salon__c> salons = new List<Salon__c>();
+        List<Salon__c> salonsTest = new List<Salon__c>();
+        for(Integer i=0;i<160;i++){
+            Salon__c salon = new Salon__c(Account__c=accs[i].Id, Name='salon'+i, Warehouse__c=TRUE);
+            Salon__c salonTest = new Salon__c(Account__c=accs[i].Id, Name='salonTest'+i, Warehouse__c=TRUE);
+            salons.add(salon);
+            salonsTest.add(salonTest);
+        }
+        insert salons;
+        
+        Test.startTest();
+        Database.SaveResult[] results = Database.insert (salonsTest, false);
+        Test.stopTest();
+        
+        for(Integer i=0;i<results.size();i++){
+            System.assert(!results[i].isSuccess());
+            System.assert(results[i].getErrors().size() > 0);
+            System.assertEquals('There can be only one warehouse related to specific account',
+                             results[i].getErrors()[0].getMessage());
+        }
+    }
 }
