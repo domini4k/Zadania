@@ -15,14 +15,24 @@ public with sharing class SalonController {
 
         //Retrieve all vehicles from database
         List<Vehicle__c> vehicles = [SELECT Salon__r.Id FROM Vehicle__c];
+        //Retrieve all warehouses from database
+        List<Salon__c> warehouses = [SELECT Id, Account__c FROM Salon__c WHERE Warehouse__c = TRUE];
 
-        //Check if any vehicle is listed in closing salon. If yes, delete lookup relationship and 
-        //set boolean value to true.
+        //Map warehouses to salons. Every salon has only one related account.
+        Map<Salon__c,Salon__c> warehousesMapped = new Map<Salon__c,Salon__c>();
+        for (Salon__c salon : salons){
+            for (Salon__c warehouse : warehouses){
+                if (warehouse.Account__c == salon.Account__c){
+                    warehousesMapped.put(salon, warehouse);
+                }
+            }
+        }
+        //Check if any vehicle is listed in closing salon. If yes, change lookup realtionship value
         for (Salon__c salon: salonsClosing){
+            Salon__c warehouseToStore = warehousesMapped.get(salon);
             for (Vehicle__c vehicle : vehicles){
                 if (vehicle.Salon__r.Id == salon.Id){
-                    vehicle.Salon__c = null;
-                    vehicle.In_warehouse__c = TRUE;
+                    vehicle.Salon__c = warehouseToStore.Id;
                 }
             }
         }
@@ -39,8 +49,10 @@ public with sharing class SalonController {
                     carOffersToDelete.add(carOffer);
                 }
             }
-
         }
         delete carOffersToDelete;
+    }
+    public static void checkDuplicateWarehouses(List<Salon__c> salons){
+
     }
 }
