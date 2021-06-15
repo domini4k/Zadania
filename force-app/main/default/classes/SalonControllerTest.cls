@@ -12,14 +12,14 @@ private with sharing class SalonControllerTest {
 
         List<Salon__c> warehouses = new List<Salon__c>();
         for(Integer i=0;i<160;i++){
-            Salon__c warehouse = new Salon__c(Account__c=accs[i].Id, Name='Warehouse', Warehouse__c=TRUE);
+            Salon__c warehouse = new Salon__c(Account__c=accs[i].Id, Name='Warehouse', Warehouse__c=TRUE, Parking_slots__c = 100);
         warehouses.add(warehouse);
         }
         insert warehouses;
         System.debug(warehouses);
         List<Salon__c> salons = new List<Salon__c>();
         for(Integer i=0;i<160;i++){
-            Salon__c salon = new Salon__c(Account__c=accs[i].Id, Name='salon'+i);
+            Salon__c salon = new Salon__c(Account__c=accs[i].Id, Name='salon'+i, Parking_slots__c = 100);
             salons.add(salon);
         }
         insert salons;
@@ -87,14 +87,14 @@ private with sharing class SalonControllerTest {
 
         List<Salon__c> warehouses = new List<Salon__c>();
         for(Integer i=0;i<160;i++){
-            Salon__c warehouse = new Salon__c(Account__c=accs[i].Id, Name='Warehouse', Warehouse__c=TRUE);
+            Salon__c warehouse = new Salon__c(Account__c=accs[i].Id, Name='Warehouse', Warehouse__c=TRUE, Parking_slots__c = 100);
         warehouses.add(warehouse);
         }
         insert warehouses;
         System.debug(warehouses);
         List<Salon__c> salons = new List<Salon__c>();
         for(Integer i=0;i<160;i++){
-            Salon__c salon = new Salon__c(Account__c=accs[i].Id, Name='salon'+i);
+            Salon__c salon = new Salon__c(Account__c=accs[i].Id, Name='salon'+i, Parking_slots__c = 100);
             salons.add(salon);
         }
         insert salons;
@@ -161,12 +161,40 @@ private with sharing class SalonControllerTest {
         List<Salon__c> salons = new List<Salon__c>();
         List<Salon__c> salonsTest = new List<Salon__c>();
         for(Integer i=0;i<160;i++){
-            Salon__c salon = new Salon__c(Account__c=accs[i].Id, Name='salon'+i, Warehouse__c=TRUE);
-            Salon__c salonTest = new Salon__c(Account__c=accs[i].Id, Name='salonTest'+i, Warehouse__c=TRUE);
+            Salon__c salon = new Salon__c(Account__c=accs[i].Id, Name='salon'+i, Warehouse__c=TRUE, Parking_slots__c = 100);
+            Salon__c salonTest = new Salon__c(Account__c=accs[i].Id, Name='salonTest'+i, Warehouse__c=TRUE, Parking_slots__c = 100);
             salons.add(salon);
             salonsTest.add(salonTest);
         }
         insert salons;
+        
+        Test.startTest();
+        Database.SaveResult[] results = Database.insert (salonsTest, false);
+        Test.stopTest();
+        
+        for(Integer i=0;i<results.size();i++){
+            System.assert(!results[i].isSuccess());
+            System.assert(results[i].getErrors().size() > 0);
+            System.assertEquals('There can be only one warehouse related to specific account',
+                             results[i].getErrors()[0].getMessage());
+        }
+    }
+    @isTest static void testAddDuplicateWarehouseScript() {
+        //create sample data
+        List<Account> accs = new List<Account>();
+        for(Integer i=0;i<160;i++){
+            Account acc = new Account(Name='acc'+i);
+            accs.add(acc);
+        }
+        insert accs;
+
+        List<Salon__c> salonsTest = new List<Salon__c>();
+        for(Integer i=0;i<80;i++){
+            Salon__c salon = new Salon__c(Account__c=accs[i].Id, Name='salon'+i, Warehouse__c=TRUE, Parking_slots__c = 100);
+            Salon__c salonTest = new Salon__c(Account__c=accs[i].Id, Name='salonTest'+i, Warehouse__c=TRUE, Parking_slots__c = 100);
+            salonsTest.add(salon);
+            salonsTest.add(salonTest);
+        }
         
         Test.startTest();
         Database.SaveResult[] results = Database.insert (salonsTest, false);

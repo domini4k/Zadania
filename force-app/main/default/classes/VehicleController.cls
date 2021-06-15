@@ -45,7 +45,6 @@ public with sharing class VehicleController {
             }
             parkingSlotsTaken.put(salon.Id,parkingSlots);
         }
-        System.debug(parkingSlotsTaken);
 
         // Map how many slots are about to be taken after insert
         Map<Id, Integer> parkingSlotsInsert = new Map<Id, Integer>();
@@ -58,7 +57,6 @@ public with sharing class VehicleController {
             }
             parkingSlotsInsert.put(salon.Id,parkingSlots);
         }
-        System.debug(parkingSlotsInsert);
 
         for (Salon__c salon : salons){
             if (salon.Parking_slots__c - parkingSlotsTaken.get(salon.Id) - parkingSlotsInsert.get(salon.Id) < 0){

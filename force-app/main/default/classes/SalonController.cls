@@ -4,14 +4,26 @@ public with sharing class SalonController {
         // Retrieve all Warehouses
         List<Salon__c> warehouses = [SELECT Id, Account__c FROM Salon__c WHERE Warehouse__c = TRUE];
 
-        //Check if there are warehouses related to Account. If yes throw error
+        List<Account> accs = [SELECT Id FROM Account];
+
+        Map<Id, Integer> numberOfWarehouses = new Map<Id, Integer>();
+        for (Account acc : accs){
+            Integer count = 0;
+            for (Salon__c warehouse : warehouses){
+                if (warehouse.Account__c == acc.Id){
+                    count++;
+                }
+            }
+            for (Salon__c salon : salons){
+                if (salon.Account__c == acc.Id && salon.Warehouse__c == TRUE){
+                    count++;
+                }
+            }
+            numberOfWarehouses.put(acc.Id,count);
+        }
         for (Salon__c salon : salons){
-            if (salon.Warehouse__c == TRUE){
-                for(Salon__c warehouse : warehouses){
-                    if (salon.Account__c == warehouse.Account__c){
-                        salon.Warehouse__c.addError('There can be only one warehouse related to specific account');
-                        }
-                    }
+            if (numberOfWarehouses.get(salon.Account__c)>1 && salon.Warehouse__c==TRUE){
+                salon.addError('There can be only one warehouse related to specific account');
             }
         }
         //Check if any salon from list has 'Closed' as a status
