@@ -1,6 +1,5 @@
-trigger Salon on Salon__c (before update, before insert) {
-    
-    SalonController.transferToWarehouse(trigger.new);
-    SalonController.updateParkingSlots(trigger.new);
-        
+trigger Salon on Salon__c(before update, before insert) {
+  SalonController.transferToWarehouse(Trigger.new);
+  SalonController.updateParkingSlots(Trigger.new);
+
 }
