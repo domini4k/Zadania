@@ -179,4 +179,45 @@ private with sharing class SalonControllerTest {
                              results[i].getErrors()[0].getMessage());
         }
     }
+    @isTest static void setWrongNumberParkingSlots() {
+            
+        //create sample data
+        List<Account> accs = new List<Account>();
+        for(Integer i=0;i<160;i++){
+            Account acc = new Account(Name='acc'+i);
+            accs.add(acc);
+        }
+        insert accs;
+
+        List<Salon__c> salons = new List<Salon__c>();
+        for(Integer i=0;i<160;i++){
+            Salon__c salon = new Salon__c(Account__c=accs[i].Id, Name='salon'+(i), Parking_slots__c = 100);
+        salons.add(salon);
+        }
+        insert salons;
+
+        List<Vehicle__c> vehs = new List<Vehicle__c>();
+        for(Integer i=0;i<160;i++){
+            Vehicle__c veh = new Vehicle__c(Salon__c=salons[i].Id, Brand__c = 'Brand'+i, Car_model__c='Car Model'+i, Serial_number__c='4GHBV58MNBV852369');
+            vehs.add(veh);
+        }
+        insert vehs;
+        
+        for (Salon__c salon : salons){
+            salon.Parking_slots__c = 0;
+        }
+
+        Test.startTest();
+        Database.SaveResult[] results = Database.update (salons, false);
+        Test.stopTest();
+
+        for(Integer i=0;i<results.size();i++){
+            System.assert(!results[i].isSuccess());
+            System.assert(results[i].getErrors().size() > 0);
+            System.assertEquals('There are more vehicles than desired parking spots',
+                             results[i].getErrors()[0].getMessage());
+        }
+
+
+    }
 }

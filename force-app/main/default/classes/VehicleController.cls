@@ -27,8 +27,49 @@ public with sharing class VehicleController {
         }
         insert newCases;
         delete dataToDelete;
+    }
 
+    public static void addVechicle(List<Vehicle__c> vehicles){
 
+        List<Salon__c> salons = [SELECT Name, Parking_slots__c FROM Salon__c];
+        List<Vehicle__c> vehiclesAll = [SELECT Salon__c FROM Vehicle__c];
+
+        // Map how many slots are taken in related salon
+        Map<Id, Integer> parkingSlotsTaken = new Map<Id, Integer>();
+        for (Salon__c salon : salons){
+            Integer parkingSlots = 0;
+            for (Vehicle__c vehicle : vehiclesAll){
+                if (vehicle.Salon__c == salon.Id){
+                    parkingSlots++;
+                }
+            }
+            parkingSlotsTaken.put(salon.Id,parkingSlots);
+        }
+        System.debug(parkingSlotsTaken);
+
+        // Map how many slots are about to be taken after insert
+        Map<Id, Integer> parkingSlotsInsert = new Map<Id, Integer>();
+        for (Salon__c salon : salons){
+            Integer parkingSlots = 0;
+            for (Vehicle__c vehicle : vehicles){
+                if (vehicle.Salon__c == salon.Id){
+                    parkingSlots++;
+                }
+            }
+            parkingSlotsInsert.put(salon.Id,parkingSlots);
+        }
+        System.debug(parkingSlotsInsert);
+
+        for (Salon__c salon : salons){
+            if (salon.Parking_slots__c - parkingSlotsTaken.get(salon.Id) - parkingSlotsInsert.get(salon.Id) < 0){
+                for (Vehicle__c vehicle : vehicles){
+                    if (vehicle.Salon__c == salon.Id){
+                        vehicle.addError('There are not enough parking spots for vehicles in this salon '+salon.Name);
+                    }
+                }
+                
+            }
+        }
 
     }
 }

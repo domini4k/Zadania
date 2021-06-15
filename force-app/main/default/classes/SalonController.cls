@@ -63,7 +63,29 @@ public with sharing class SalonController {
             }
         }
         delete carOffersToDelete;
-        
-        
+         
+    }
+    
+    public static void updateParkingSlots(List<Salon__c> salons) {
+
+        List<Vehicle__c> vehicles = [SELECT Salon__c FROM Vehicle__c];
+        Map<Salon__c, Integer> parkingSlotsTaken = new Map<Salon__c, Integer>();
+
+        for (Salon__c salon : salons){
+            Integer parkingSlots = 0;
+            for (Vehicle__c vehicle : vehicles){
+                if (vehicle.Salon__c == salon.Id){
+                    parkingSlots++;
+                }
+            }
+            parkingSlotsTaken.put(salon,parkingSlots);
+        }
+
+        for (Salon__c salon : salons){
+
+            if (salon.Parking_slots__c<parkingSlotsTaken.get(salon)){
+                salon.addError('There are more vehicles than desired parking spots');
+            }
+        }
     }
 }
