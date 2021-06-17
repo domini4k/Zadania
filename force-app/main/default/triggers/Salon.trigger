@@ -1,5 +1,9 @@
 trigger Salon on Salon__c(before update, before insert) {
-  SalonController.transferToWarehouse(Trigger.new);
-  SalonController.updateParkingSlots(Trigger.new);
+  if (Trigger.isInsert) {
+    SalonController.avoidDuplicateWarehouses(Trigger.new);
+  } else if (Trigger.isUpdate) {
+    SalonController.updateParkingSlots(Trigger.new);
+    SalonController.transferToWarehouse(Trigger.new, Trigger.oldMap);
+  }
 
 }

@@ -1,8 +1,19 @@
+/**
+ * @author Pawel Dominiak <pawel.dominiak@accenture.com>
+ * @date 16/06/2021
+ * @description This class is for testing VehicleController class
+ **/
 @isTest
 private with sharing class VehicleControllerTest {
+  /**
+   * @author Pawel Dominiak <pawel.dominiak@accenture.com>
+   * @date 16/06/2021
+   * @description This method is for testing VehicleController class
+   **/
   @isTest
   static void VehicleDelete() {
     //create sample data
+    String serialNumber = '4GHBV58MNBV852852';
     List<Vehicle__c> vehs = new List<Vehicle__c>();
     for (Integer i = 0; i < 160; i++) {
       Vehicle__c veh = new Vehicle__c(
@@ -43,38 +54,29 @@ private with sharing class VehicleControllerTest {
     System.assert(telsDeleted.size() == 0);
     System.assert(cases.size() == 160);
   }
+  /**
+   * @author Pawel Dominiak <pawel.dominiak@accenture.com>
+   * @date 16/06/2021
+   * @description This method is for testing VehicleController class
+   **/
   @isTest
   static void addVehicle() {
     //create sample data
-    List<Account> accs = new List<Account>();
-    for (Integer i = 0; i < 160; i++) {
-      Account acc = new Account(Name = 'acc' + i);
-      accs.add(acc);
-    }
-    insert accs;
-
-    List<Salon__c> salons = new List<Salon__c>();
-    for (Integer i = 0; i < 160; i++) {
-      Salon__c salon = new Salon__c(
-        Account__c = accs[i].Id,
-        Name = 'salon' + i,
-        Parking_slots__c = 1
-      );
-      salons.add(salon);
-    }
-    insert salons;
-
-    List<Vehicle__c> vehs = new List<Vehicle__c>();
-    for (Integer i = 0; i < 160; i++) {
-      Vehicle__c veh = new Vehicle__c(
-        Salon__c = salons[i].Id,
-        Brand__c = 'Brand' + i,
-        Car_model__c = 'Car Model' + i,
-        Serial_number__c = '4GHBV58MNBV852852'
-      );
-      vehs.add(veh);
-    }
-    insert vehs;
+    String mssg = 'There are not enough parking spots for vehicles in this salon ';
+    List<Account> accs = TestDataFactory.Accounts(160);
+    List<Salon__c> salons = TestDataFactory.Salons(
+      160,
+      accs,
+      1,
+      false,
+      'Open',
+      true
+    );
+    List<Vehicle__c> vehs = TestDataFactory.Vehicles(
+      160,
+      salons,
+      '4GHBV58MNBV852'
+    );
 
     List<Vehicle__c> vehsTest = new List<Vehicle__c>();
     for (Integer i = 0; i < 160; i++) {
@@ -82,7 +84,7 @@ private with sharing class VehicleControllerTest {
         Salon__c = salons[i].Id,
         Brand__c = 'Brand' + i,
         Car_model__c = 'Car Model' + i,
-        Serial_number__c = '4GHBV58MNBV852852'
+        Serial_number__c = '4GHBV58MNBV852' + (i + 100)
       );
       vehsTest.add(vehTest);
     }
@@ -96,8 +98,7 @@ private with sharing class VehicleControllerTest {
       System.assert(!results[i].isSuccess());
       System.assert(results[i].getErrors().size() > 0);
       System.assertEquals(
-        'There are not enough parking spots for vehicles in this salon ' +
-        salons[i].Name,
+        mssg + salons[i].Name,
         results[i].getErrors()[0].getMessage()
       );
     }

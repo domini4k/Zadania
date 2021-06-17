@@ -1,68 +1,60 @@
+/**
+ * @author Pawel Dominiak <pawel.dominiak@accenture.com>
+ * @date 16/06/2021
+ * @description This class is for testing SalonController class
+ **/
 @isTest
 private with sharing class SalonControllerTest {
+  /**
+   * @author Pawel Dominiak <pawel.dominiak@accenture.com>
+   * @date 16/06/2021
+   * @description This method is for testing SalonController class
+   **/
   @isTest
   static void setStatusToClosed() {
-    //create sample data
-    List<Account> accs = new List<Account>();
-    for (Integer i = 0; i < 160; i++) {
-      Account acc = new Account(Name = 'acc' + i);
-      accs.add(acc);
-    }
-    insert accs;
-
-    List<Salon__c> warehouses = new List<Salon__c>();
-    for (Integer i = 0; i < 160; i++) {
-      Salon__c warehouse = new Salon__c(
-        Account__c = accs[i].Id,
-        Name = 'Warehouse',
-        Warehouse__c = true,
-        Parking_slots__c = 100
-      );
-      warehouses.add(warehouse);
-    }
-    insert warehouses;
-    System.debug(warehouses);
-    List<Salon__c> salons = new List<Salon__c>();
-    for (Integer i = 0; i < 160; i++) {
-      Salon__c salon = new Salon__c(
-        Account__c = accs[i].Id,
-        Name = 'salon' + i,
-        Parking_slots__c = 100
-      );
-      salons.add(salon);
-    }
-    insert salons;
-
+    String serialNumberTest = '4GHBV58MNBV852369';
+    List<Account> accs = TestDataFactory.Accounts(160);
+    List<Salon__c> warehouses = TestDataFactory.Salons(
+      160,
+      accs,
+      100,
+      true,
+      'Open',
+      true
+    );
+    List<Salon__c> salons = TestDataFactory.Salons(
+      160,
+      accs,
+      100,
+      false,
+      'Open',
+      true
+    );
     List<Vehicle__c> vehs = new List<Vehicle__c>();
     for (Integer i = 0; i < 160; i++) {
       Vehicle__c veh = new Vehicle__c(
         Salon__c = salons[i].Id,
         Brand__c = 'Brand' + i,
         Car_model__c = 'Car Model' + i,
-        Serial_number__c = '4GHBV58MNBV852369'
+        Serial_number__c = serialNumberTest
       );
       vehs.add(veh);
     }
     insert vehs;
-
-    List<Car_Posting__c> carOffersA = new List<Car_Posting__c>();
-    List<Car_Posting__c> carOffersB = new List<Car_Posting__c>();
-    for (Integer i = 0; i < 160; i++) {
-      Car_Posting__c carOfferA = new Car_Posting__c(
-        Vehicle__c = vehs[i].Id,
-        Salon__c = salons[i].Id,
-        Virtual__c = false
-      );
-      Car_Posting__c carOfferB = new Car_Posting__c(
-        Vehicle__c = vehs[i].Id,
-        Salon__c = salons[i].Id,
-        Virtual__c = true
-      );
-      carOffersA.add(carOfferA);
-      carOffersB.add(carOfferB);
-    }
-    insert carOffersA;
-    insert carOffersB;
+    List<Car_Posting__c> carOffers = TestDataFactory.carOffers(
+      160,
+      vehs,
+      salons,
+      false,
+      true
+    );
+    List<Car_Posting__c> carOffersTest = TestDataFactory.carOffers(
+      160,
+      vehs,
+      salons,
+      true,
+      true
+    );
 
     for (Salon__c salon : salons) {
       salon.Status__c = 'Closed';
@@ -94,14 +86,14 @@ private with sharing class SalonControllerTest {
       }
     }
 
-    List<Car_Posting__c> carOffers = [
+    List<Car_Posting__c> carOffersAfter = [
       SELECT Id
       FROM Car_Posting__c
       WHERE Vehicle__r.Serial_number__c = '4GHBV58MNBV852369'
     ];
 
     //Compare them to expected values
-    for (Integer i = 0; i < 160; i++) {
+    for (Integer i = 0; i < results.size(); i++) {
       System.debug(results[i].getErrors());
       System.assert(results[i].isSuccess());
       System.assert(results[i].getErrors().size() == 0);
@@ -110,71 +102,59 @@ private with sharing class SalonControllerTest {
         warehousesMappedTest.get(vehsAfterTest[i]).Id
       );
     }
-    System.assert(carOffers.size() == 0);
+    System.assert(carOffersAfter.size() == 0);
   }
+  /**
+   * @author Pawel Dominiak <pawel.dominiak@accenture.com>
+   * @date 16/06/2021
+   * @description This method is for testing SalonController class
+   **/
   @isTest
   static void updateSalonNotClosing() {
-    //create sample data
-    List<Account> accs = new List<Account>();
-    for (Integer i = 0; i < 160; i++) {
-      Account acc = new Account(Name = 'acc' + i);
-      accs.add(acc);
-    }
-    insert accs;
-
-    List<Salon__c> warehouses = new List<Salon__c>();
-    for (Integer i = 0; i < 160; i++) {
-      Salon__c warehouse = new Salon__c(
-        Account__c = accs[i].Id,
-        Name = 'Warehouse',
-        Warehouse__c = true,
-        Parking_slots__c = 100
-      );
-      warehouses.add(warehouse);
-    }
-    insert warehouses;
-    System.debug(warehouses);
-    List<Salon__c> salons = new List<Salon__c>();
-    for (Integer i = 0; i < 160; i++) {
-      Salon__c salon = new Salon__c(
-        Account__c = accs[i].Id,
-        Name = 'salon' + i,
-        Parking_slots__c = 100
-      );
-      salons.add(salon);
-    }
-    insert salons;
-
+    String serialNumberTest = '4GHBV58MNBV852369';
+    List<Account> accs = TestDataFactory.Accounts(160);
+    List<Salon__c> warehouses = TestDataFactory.Salons(
+      160,
+      accs,
+      100,
+      true,
+      'Open',
+      true
+    );
+    List<Salon__c> salons = TestDataFactory.Salons(
+      160,
+      accs,
+      100,
+      false,
+      'Open',
+      true
+    );
     List<Vehicle__c> vehs = new List<Vehicle__c>();
     for (Integer i = 0; i < 160; i++) {
       Vehicle__c veh = new Vehicle__c(
         Salon__c = salons[i].Id,
         Brand__c = 'Brand' + i,
         Car_model__c = 'Car Model' + i,
-        Serial_number__c = '4GHBV58MNBV852369'
+        Serial_number__c = serialNumberTest
       );
       vehs.add(veh);
     }
     insert vehs;
 
-    List<Car_Posting__c> carOffersA = new List<Car_Posting__c>();
-    List<Car_Posting__c> carOffersB = new List<Car_Posting__c>();
-    for (Integer i = 0; i < 160; i++) {
-      Car_Posting__c carOfferA = new Car_Posting__c(
-        Vehicle__c = vehs[i].Id,
-        Salon__c = salons[i].Id,
-        Virtual__c = false
-      );
-      Car_Posting__c carOfferB = new Car_Posting__c(
-        Vehicle__c = vehs[i].Id,
-        Salon__c = salons[i].Id,
-        Virtual__c = true
-      );
-      carOffersA.add(carOfferA);
-      carOffersB.add(carOfferB);
-    }
-    insert carOffersA;
-    insert carOffersB;
+    List<Car_Posting__c> carOffers = TestDataFactory.carOffers(
+      160,
+      vehs,
+      salons,
+      false,
+      true
+    );
+    List<Car_Posting__c> carOffersTest = TestDataFactory.carOffers(
+      160,
+      vehs,
+      salons,
+      true,
+      true
+    );
 
     for (Salon__c salon : salons) {
       salon.Status__c = 'Open';
@@ -206,7 +186,7 @@ private with sharing class SalonControllerTest {
       }
     }
 
-    List<Car_Posting__c> carOffers = [
+    List<Car_Posting__c> carOffersAfter = [
       SELECT Id
       FROM Car_Posting__c
       WHERE Vehicle__r.Serial_number__c = '4GHBV58MNBV852369'
@@ -217,124 +197,105 @@ private with sharing class SalonControllerTest {
       System.assert(results[i].isSuccess());
       System.assert(results[i].getErrors().size() == 0);
     }
-    System.assert(carOffers.size() == 320);
+    System.assert(carOffersAfter.size() == 320);
   }
+  /**
+   * @author Pawel Dominiak <pawel.dominiak@accenture.com>
+   * @date 16/06/2021
+   * @description This method is for testing SalonController class
+   **/
   @isTest
   static void testAddDuplicateWarehouse() {
-    //create sample data
-    List<Account> accs = new List<Account>();
-    for (Integer i = 0; i < 160; i++) {
-      Account acc = new Account(Name = 'acc' + i);
-      accs.add(acc);
-    }
-    insert accs;
-
-    List<Salon__c> salons = new List<Salon__c>();
-    List<Salon__c> salonsTest = new List<Salon__c>();
-    for (Integer i = 0; i < 160; i++) {
-      Salon__c salon = new Salon__c(
-        Account__c = accs[i].Id,
-        Name = 'salon' + i,
-        Warehouse__c = true,
-        Parking_slots__c = 100
-      );
-      Salon__c salonTest = new Salon__c(
-        Account__c = accs[i].Id,
-        Name = 'salonTest' + i,
-        Warehouse__c = true,
-        Parking_slots__c = 100
-      );
-      salons.add(salon);
-      salonsTest.add(salonTest);
-    }
-    insert salons;
+    String mssg = 'There can be only one warehouse related to specific account';
+    List<Account> accs = TestDataFactory.Accounts(160);
+    List<Salon__c> warehouses = TestDataFactory.Salons(
+      160,
+      accs,
+      100,
+      true,
+      'Open',
+      true
+    );
+    List<Salon__c> salons = TestDataFactory.Salons(
+      160,
+      accs,
+      100,
+      true,
+      'Open',
+      false
+    );
 
     Test.startTest();
-    Database.SaveResult[] results = Database.insert(salonsTest, false);
+    Database.SaveResult[] results = Database.insert(salons, false);
     Test.stopTest();
 
     for (Integer i = 0; i < results.size(); i++) {
       System.assert(!results[i].isSuccess());
       System.assert(results[i].getErrors().size() > 0);
-      System.assertEquals(
-        'There can be only one warehouse related to specific account',
-        results[i].getErrors()[0].getMessage()
-      );
+      System.assertEquals(mssg, results[i].getErrors()[0].getMessage());
     }
   }
+  /**
+   * @author Pawel Dominiak <pawel.dominiak@accenture.com>
+   * @date 16/06/2021
+   * @description This method is for testing SalonController class
+   **/
   @isTest
   static void testAddDuplicateWarehouseScript() {
-    //create sample data
-    List<Account> accs = new List<Account>();
-    for (Integer i = 0; i < 160; i++) {
-      Account acc = new Account(Name = 'acc' + i);
-      accs.add(acc);
-    }
-    insert accs;
+    String mssg = 'There can be only one warehouse related to specific account';
+    List<Account> accs = TestDataFactory.Accounts(160);
+    List<Salon__c> warehouses = TestDataFactory.Salons(
+      80,
+      accs,
+      100,
+      true,
+      'Open',
+      false
+    );
+    List<Salon__c> salons = TestDataFactory.Salons(
+      80,
+      accs,
+      100,
+      true,
+      'Open',
+      false
+    );
 
-    List<Salon__c> salonsTest = new List<Salon__c>();
-    for (Integer i = 0; i < 80; i++) {
-      Salon__c salon = new Salon__c(
-        Account__c = accs[i].Id,
-        Name = 'salon' + i,
-        Warehouse__c = true,
-        Parking_slots__c = 100
-      );
-      Salon__c salonTest = new Salon__c(
-        Account__c = accs[i].Id,
-        Name = 'salonTest' + i,
-        Warehouse__c = true,
-        Parking_slots__c = 100
-      );
-      salonsTest.add(salon);
-      salonsTest.add(salonTest);
-    }
+    warehouses.addAll(salons);
 
     Test.startTest();
-    Database.SaveResult[] results = Database.insert(salonsTest, false);
+    Database.SaveResult[] results = Database.insert(warehouses, false);
     Test.stopTest();
 
     for (Integer i = 0; i < results.size(); i++) {
       System.assert(!results[i].isSuccess());
       System.assert(results[i].getErrors().size() > 0);
-      System.assertEquals(
-        'There can be only one warehouse related to specific account',
-        results[i].getErrors()[0].getMessage()
-      );
+      System.assertEquals(mssg, results[i].getErrors()[0].getMessage());
     }
   }
+  /**
+   * @author Pawel Dominiak <pawel.dominiak@accenture.com>
+   * @date 16/06/2021
+   * @description This method is for testing SalonController class
+   **/
   @isTest
   static void setWrongNumberParkingSlots() {
-    //create sample data
-    List<Account> accs = new List<Account>();
-    for (Integer i = 0; i < 160; i++) {
-      Account acc = new Account(Name = 'acc' + i);
-      accs.add(acc);
-    }
-    insert accs;
+    String mssg = 'There are more vehicles than desired parking spots';
+    List<Account> accs = TestDataFactory.Accounts(160);
+    List<Salon__c> salons = TestDataFactory.Salons(
+      160,
+      accs,
+      100,
+      false,
+      'Open',
+      true
+    );
 
-    List<Salon__c> salons = new List<Salon__c>();
-    for (Integer i = 0; i < 160; i++) {
-      Salon__c salon = new Salon__c(
-        Account__c = accs[i].Id,
-        Name = 'salon' + (i),
-        Parking_slots__c = 100
-      );
-      salons.add(salon);
-    }
-    insert salons;
-
-    List<Vehicle__c> vehs = new List<Vehicle__c>();
-    for (Integer i = 0; i < 160; i++) {
-      Vehicle__c veh = new Vehicle__c(
-        Salon__c = salons[i].Id,
-        Brand__c = 'Brand' + i,
-        Car_model__c = 'Car Model' + i,
-        Serial_number__c = '4GHBV58MNBV852369'
-      );
-      vehs.add(veh);
-    }
-    insert vehs;
+    List<Vehicle__c> vehs = TestDataFactory.Vehicles(
+      160,
+      salons,
+      '4GHBV58MNBV852'
+    );
 
     for (Salon__c salon : salons) {
       salon.Parking_slots__c = 0;
@@ -347,10 +308,7 @@ private with sharing class SalonControllerTest {
     for (Integer i = 0; i < results.size(); i++) {
       System.assert(!results[i].isSuccess());
       System.assert(results[i].getErrors().size() > 0);
-      System.assertEquals(
-        'There are more vehicles than desired parking spots',
-        results[i].getErrors()[0].getMessage()
-      );
+      System.assertEquals(mssg, results[i].getErrors()[0].getMessage());
     }
   }
 }

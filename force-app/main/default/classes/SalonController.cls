@@ -1,44 +1,87 @@
+/**
+ * @author Pawel Dominiak <pawel.dominiak@accenture.com>
+ * @date 16/06/2021
+ * @description This class is for managing Salons
+ **/
 public with sharing class SalonController {
-  public static void transferToWarehouse(List<Salon__c> salons) {
-    // Retrieve all Warehouses
+  /**
+   * @author Pawel Dominiak <pawel.dominiak@accenture.com>
+   * @date 16/06/2021
+   * @description This method is used not to insert another warehouse
+   **/
+  public static void avoidDuplicateWarehouses(List<Salon__c> inSalons) {
+    if (inSalons == null) {
+      return;
+    }
+    Set<Id> salonsAccsID = new Set<Id>();
+    List<Salon__c> newWarehouses = new List<Salon__c>();
+    for (Salon__c salon : inSalons) {
+      if (salon.Warehouse__c == true) {
+        salonsAccsID.add(salon.Account__c);
+        newWarehouses.add(salon);
+      }
+    }
+    // Retrieve all related Warehouses from database
     List<Salon__c> warehouses = [
       SELECT Id, Account__c
       FROM Salon__c
-      WHERE Warehouse__c = TRUE
+      WHERE Warehouse__c = TRUE AND Account__c IN :salonsAccsID
     ];
 
-    List<Account> accs = [SELECT Id FROM Account];
-
+    //Map number of warehouses to Accounts
     Map<Id, Integer> numberOfWarehouses = new Map<Id, Integer>();
-    for (Account acc : accs) {
-      Integer count = 0;
-      for (Salon__c warehouse : warehouses) {
-        if (warehouse.Account__c == acc.Id) {
-          count++;
-        }
-      }
-      for (Salon__c salon : salons) {
-        if (salon.Account__c == acc.Id && salon.Warehouse__c == true) {
-          count++;
-        }
-      }
-      numberOfWarehouses.put(acc.Id, count);
+    //Put in the map warehouses from DB
+    for (Salon__c warehouse : warehouses) {
+      numberOfWarehouses.put(warehouse.Account__c, 1);
     }
-    for (Salon__c salon : salons) {
-      if (
-        numberOfWarehouses.get(salon.Account__c) > 1 &&
-        salon.Warehouse__c == true
-      ) {
-        salon.addError(
+
+    for (Salon__c warehouse : newWarehouses) {
+      if (numberOfWarehouses.containsKey(warehouse.Account__c)) {
+        Integer newValue = numberOfWarehouses.get(warehouse.Account__c) + 1;
+        numberOfWarehouses.put(warehouse.Account__c, newValue);
+      } else {
+        numberOfWarehouses.put(warehouse.Account__c, 1);
+      }
+    }
+
+    for (Salon__c warehouse : newWarehouses) {
+      if (numberOfWarehouses.get(warehouse.Account__c) > 1) {
+        warehouse.addError(
           'There can be only one warehouse related to specific account'
         );
       }
     }
-    //Check if any salon from list has 'Closed' as a status
-    //If not exit function, If yes use another list to save on iteration
+  }
+  /**
+   * @author Pawel Dominiak <pawel.dominiak@accenture.com>
+   * @date 16/06/2021
+   * @description This method is used for moving cars into warehouses
+   **/
+  public static void transferToWarehouse(
+    List<Salon__c> inSalons,
+    Map<Id, Salon__c> inSalonsOldMap
+  ) {
+    if (inSalons == null) {
+      return;
+    }
+
+    Set<Id> salonsAccsID = new Set<Id>();
+    for (Salon__c salon : inSalons) {
+      salonsAccsID.add(salon.Account__c);
+    }
+    // Retrieve all related Warehouses
+    List<Salon__c> warehouses = [
+      SELECT Id, Account__c
+      FROM Salon__c
+      WHERE Warehouse__c = TRUE AND Account__c IN :salonsAccsID
+    ];
+    //Check how many salons changed their status to closed and use them
     List<Salon__c> salonsClosing = new List<Salon__c>();
-    for (Salon__c salon : salons) {
-      if (salon.Status__c == 'Closed') {
+    for (Salon__c salon : inSalons) {
+      if (
+        inSalonsOldMap.get(salon.Id).Status__c != salon.Status__c &&
+        salon.Status__c == 'Closed'
+      ) {
         salonsClosing.add(salon);
       }
     }
@@ -46,61 +89,74 @@ public with sharing class SalonController {
       return;
     }
 
-    //Retrieve all vehicles from database
-    List<Vehicle__c> vehicles = [SELECT Salon__r.Id FROM Vehicle__c];
-
-    //Map warehouses to salons. Every salon has only one related account.
-    //Solution not quite elegant but I could not find other way
-    Map<Salon__c, Salon__c> warehousesMapped = new Map<Salon__c, Salon__c>();
-    for (Salon__c salon : salons) {
-      for (Salon__c warehouse : warehouses) {
-        if (warehouse.Account__c == salon.Account__c) {
-          warehousesMapped.put(salon, warehouse);
-        }
-      }
+    //Retrieve all related vehicles from database
+    List<Vehicle__c> vehicles = [
+      SELECT Salon__c
+      FROM Vehicle__c
+      WHERE Salon__c IN :salonsClosing
+    ];
+    //Map warehouses to Account.
+    Map<Id, Id> warehousesMappedtoAccount = new Map<Id, Id>();
+    for (Salon__c warehouse : warehouses) {
+      warehousesMappedtoAccount.put(warehouse.Account__c, warehouse.Id);
     }
-    //Check if any vehicle is listed in closing salon. If yes, change lookup realtionship value
-    for (Salon__c salon : salonsClosing) {
-      Salon__c warehouseToStore = warehousesMapped.get(salon);
-      for (Vehicle__c vehicle : vehicles) {
-        if (vehicle.Salon__r.Id == salon.Id) {
-          vehicle.Salon__c = warehouseToStore.Id;
-        }
-      }
+    //Map accounts to closing salons
+    Map<Id, Id> closingSalonsMappedtoAccount = new Map<Id, Id>();
+    for (Salon__c closingSalon : salonsClosing) {
+      closingSalonsMappedtoAccount.put(
+        closingSalon.Id,
+        closingSalon.Account__c
+      );
+    }
+    //Transfer vehicles to warehouses related to their original account
+    for (Vehicle__c vehicle : vehicles) {
+      Id value = closingSalonsMappedtoAccount.get(vehicle.Salon__c);
+      vehicle.Salon__c = warehousesMappedtoAccount.get(value);
     }
     update vehicles;
 
-    //Retrieve all car offers from database
-    List<Car_Posting__c> carOffers = [SELECT Salon__r.Id FROM Car_Posting__c];
-    List<Car_Posting__c> carOffersToDelete = new List<Car_Posting__c>();
+    //Retrieve all related car offers from database
+    List<Car_Posting__c> carOffers = [
+      SELECT Salon__c
+      FROM Car_Posting__c
+      WHERE Salon__c IN :salonsClosing
+    ];
 
-    //Check what offers are related to closing salon and delete them
-    for (Salon__c salon : salonsClosing) {
-      for (Car_Posting__c carOffer : carOffers) {
-        if (carOffer.Salon__r.Id == salon.Id) {
-          carOffersToDelete.add(carOffer);
-        }
-      }
+    List<Car_Posting__c> carOffersToDelete = new List<Car_Posting__c>();
+    //Delete related offers
+    for (Car_Posting__c carOffer : carOffers) {
+      carOffersToDelete.add(carOffer);
     }
     delete carOffersToDelete;
   }
-
-  public static void updateParkingSlots(List<Salon__c> salons) {
-    List<Vehicle__c> vehicles = [SELECT Salon__c FROM Vehicle__c];
-    Map<Salon__c, Integer> parkingSlotsTaken = new Map<Salon__c, Integer>();
-
-    for (Salon__c salon : salons) {
-      Integer parkingSlots = 0;
-      for (Vehicle__c vehicle : vehicles) {
-        if (vehicle.Salon__c == salon.Id) {
-          parkingSlots++;
-        }
-      }
-      parkingSlotsTaken.put(salon, parkingSlots);
+  /**
+   * @author Pawel Dominiak <pawel.dominiak@accenture.com>
+   * @date 16/06/2021
+   * @description This method is used to update parking slots field
+   **/
+  public static void updateParkingSlots(List<Salon__c> inSalons) {
+    if (inSalons == null) {
+      return;
     }
+    List<Vehicle__c> vehicles = [
+      SELECT Salon__c
+      FROM Vehicle__c
+      WHERE Salon__c IN :inSalons
+    ];
+    // Map parking slots taken by vehicles to Salon IDs
+    Map<Id, Integer> parkingSlotsTaken = new Map<Id, Integer>();
 
-    for (Salon__c salon : salons) {
-      if (salon.Parking_slots__c < parkingSlotsTaken.get(salon)) {
+    for (Vehicle__c vehicle : vehicles) {
+      if (parkingSlotsTaken.containsKey(vehicle.Salon__c)) {
+        Integer newValue = parkingSlotsTaken.get(vehicle.Salon__c) + 1;
+        parkingSlotsTaken.put(vehicle.Salon__c, newValue);
+      } else {
+        parkingSlotsTaken.put(vehicle.Salon__c, 1);
+      }
+    }
+    // Add error if there will be less places than before update
+    for (Salon__c salon : inSalons) {
+      if (salon.Parking_slots__c < parkingSlotsTaken.get(salon.Id)) {
         salon.addError('There are more vehicles than desired parking spots');
       }
     }
