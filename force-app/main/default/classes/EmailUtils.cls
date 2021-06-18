@@ -1,20 +1,46 @@
+/**
+ * @author Pawel Dominiak <pawel.dominiak@accenture.com>
+ * @date 16/06/2021
+ * @description This class is for managing emails
+ **/
 public with sharing class EmailUtils {
-    @future(callout=true)
-    public static void SendEmailAsync(List<Car_Posting__c> newCarOffers) {
-        if (newCarOffers == null){
-            return;
-        }
-        String toAddress = 'dominiak123@gmail.com';
-        sendEmail(toAddress, newCarOffers)
-
+  /**
+   * @author Pawel Dominiak <pawel.dominiak@accenture.com>
+   * @date 16/06/2021
+   * @description This method is for sending asynchronous emails
+   **/
+  public static void SendEmail(List<Car_Posting__c> inNewCarOffers) {
+    List<String> newCarOffersID = new List<String>();
+    List<String> newCarOffersSalon = new List<String>();
+    for (Car_Posting__c caroffer : inNewCarOffers) {
+      newCarOffersID.add(carOffer.Id);
+      newCarOffersSalon.add(caroffer.Salon__c);
     }
-        
-    private static void sendEmail(String toAddress, List<Car_Posting__c> newCarOffersId) {
-        Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
-        mail.setToAddresses(toAddresses);
-        mail.setSubject('New Car Offers');
-        mail.setPlainTextBody('Your Case: ' + case.Id +' has been created.');
-        Messaging.sendEmail(new Messaging.SingleEmailMessage[] { mail });
-        }
+    SendEmailAsync(newCarOffersID, newCarOffersSalon);
+  }
+  /**
+   * @author Pawel Dominiak <pawel.dominiak@accenture.com>
+   * @date 16/06/2021
+   * @description This method is for sending asynchronous emails
+   **/
+  @future(callout=true)
+  public static void SendEmailAsync(
+    List<String> inNewCarOffersID,
+    List<String> inNewCarOffersSalon
+  ) {
+    if (inNewCarOffersID == null || inNewCarOffersSalon == null) {
+      return;
     }
+    List<String> toAddresses = new List<String>();
+    toAddresses.add('dominiak123@gmail.com');
+    Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
+    String mssg = '';
+    for (Integer i = 0; i < inNewCarOffersID.size(); i++) {
+      mssg = mssg + inNewCarOffersID[i] + ' (' + inNewCarOffersSalon[i] + '); ';
+    }
+    mail.setToAddresses(toAddresses);
+    mail.setSubject('New Car Offers');
+    mail.setPlainTextBody('New car offers have been created: ' + mssg);
+    Messaging.sendEmail(new List<Messaging.SingleEmailMessage>{ mail });
+  }
 }

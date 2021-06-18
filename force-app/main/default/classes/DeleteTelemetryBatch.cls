@@ -1,7 +1,12 @@
+/**
+ * @author Pawel Dominiak <pawel.dominiak@accenture.com>
+ * @date 16/06/2021
+ * @description This class is for batch deleting telemetry data
+ **/
 public with sharing class DeleteTelemetryBatch implements Database.Batchable<sObject> {
   public Database.QueryLocator start(Database.BatchableContext bc) {
     return Database.getQueryLocator(
-      'SELECT ID FROM Telemetry__c WHERE Created__c > YESTERDAY'
+      [SELECT ID FROM Telemetry__c WHERE Created__c < yesterday]
     );
   }
   public void execute(Database.BatchableContext bc, List<Telemetry__c> scope) {
