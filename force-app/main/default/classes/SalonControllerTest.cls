@@ -94,7 +94,6 @@ private with sharing class SalonControllerTest {
 
     //Compare them to expected values
     for (Integer i = 0; i < results.size(); i++) {
-      System.debug(results[i].getErrors());
       System.assert(results[i].isSuccess());
       System.assert(results[i].getErrors().size() == 0);
       System.assert(
@@ -206,7 +205,7 @@ private with sharing class SalonControllerTest {
    **/
   @isTest
   static void testAddDuplicateWarehouse() {
-    String mssg = 'There can be only one warehouse related to specific account';
+    String mssg = Constant.salonControllerErrorMessageWarehouse;
     List<Account> accs = TestDataFactory.Accounts(160);
     List<Salon__c> warehouses = TestDataFactory.Salons(
       160,
@@ -242,7 +241,7 @@ private with sharing class SalonControllerTest {
    **/
   @isTest
   static void testAddDuplicateWarehouseScript() {
-    String mssg = 'There can be only one warehouse related to specific account';
+    String mssg = Constant.salonControllerErrorMessageWarehouse;
     List<Account> accs = TestDataFactory.Accounts(160);
     List<Salon__c> warehouses = TestDataFactory.Salons(
       80,
@@ -280,7 +279,7 @@ private with sharing class SalonControllerTest {
    **/
   @isTest
   static void setWrongNumberParkingSlots() {
-    String mssg = 'There are more vehicles than desired parking spots';
+    String mssg = Constant.salonControllerErrorMessageParking;
     List<Account> accs = TestDataFactory.Accounts(160);
     List<Salon__c> salons = TestDataFactory.Salons(
       160,

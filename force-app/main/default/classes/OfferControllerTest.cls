@@ -166,7 +166,7 @@ private with sharing class OfferControllerTest {
    **/
   @isTest
   static void testAddDuplicateScript() {
-    String mssg = 'Car is already physically listed';
+    String mssg = Constant.offerControllerErrorMessage;
     List<Account> accs = TestDataFactory.Accounts(160);
     List<Salon__c> salonsA = TestDataFactory.Salons(
       160,

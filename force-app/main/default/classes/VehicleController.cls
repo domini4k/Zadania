@@ -24,7 +24,6 @@ public with sharing class VehicleController {
       WHERE Vehicle__c IN :vehiclesID
     ];
 
-    List<Telemetry__c> dataToDelete = new List<Telemetry__c>();
     List<Case> newCases = new List<Case>();
 
     for (Vehicle__c vehicle : inVehicles) {
@@ -50,11 +49,7 @@ public with sharing class VehicleController {
       newCases.add(newCase);
     }
     insert newCases;
-    //Pick all telemetry data for each vehicle
-    for (Telemetry__c telemetry : data) {
-      dataToDelete.add(telemetry);
-    }
-    delete dataToDelete;
+    delete data;
   }
   /**
    * @author Pawel Dominiak <pawel.dominiak@accenture.com>
@@ -101,6 +96,21 @@ public with sharing class VehicleController {
       FROM Salon__c
       WHERE Id IN :relatedSalons
     ];
+
+    Map<Id, List<Vehicle__c>> vehiclesMappedToSalon = new Map<Id, List<Vehicle__c>>();
+    for (Vehicle__c vehicle : inVehicles) {
+      if (vehiclesMappedToSalon.containsKey(vehicle.Salon__c)) {
+        List<Vehicle__c> vehsList = vehiclesMappedToSalon.get(vehicle.Salon__c);
+        vehsList.add(vehicle);
+        vehiclesMappedToSalon.put(vehicle.Salon__c, vehsList);
+      } else {
+        vehiclesMappedToSalon.put(
+          vehicle.Salon__c,
+          new List<Vehicle__c>{ vehicle }
+        );
+      }
+    }
+
     //Check if there are not enough place
     for (Salon__c salon : salonsToCheck) {
       if (parkingSlotsTaken.get(salon.Id) == null) {
@@ -114,13 +124,9 @@ public with sharing class VehicleController {
         parkingSlotsInsert.get(salon.Id) < 0
       ) {
         //find vehicles related to salon where there is not enough place
-        for (Vehicle__c vehicle : inVehicles) {
-          if (vehicle.Salon__c == salon.Id) {
-            vehicle.addError(
-              'There are not enough parking spots for vehicles in this salon ' +
-              salon.Name
-            );
-          }
+        List<Vehicle__c> vehsList = vehiclesMappedToSalon.get(salon.Id);
+        for (Vehicle__c vehicle : vehsList) {
+          vehicle.addError(Constant.vehicleControllerErrorMessage + salon.Name);
         }
       }
     }

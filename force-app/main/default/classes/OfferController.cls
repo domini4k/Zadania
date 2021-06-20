@@ -44,8 +44,11 @@ public with sharing class OfferController {
     }
     // Add errors
     for (Car_Posting__c newCarOffer : inNewCarOffers) {
-      if (numberOfCarOffers.get(newCarOffer.Vehicle__c) > 1) {
-        newCarOffer.addError('Car is already physically listed');
+      if (
+        numberOfCarOffers.get(newCarOffer.Vehicle__c) > 1 &&
+        !newCarOffer.Virtual__c
+      ) {
+        newCarOffer.addError(Constant.offerControllerErrorMessage);
       }
     }
   }

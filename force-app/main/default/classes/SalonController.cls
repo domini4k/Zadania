@@ -16,7 +16,7 @@ public with sharing class SalonController {
     Set<Id> salonsAccsID = new Set<Id>();
     List<Salon__c> newWarehouses = new List<Salon__c>();
     for (Salon__c salon : inSalons) {
-      if (salon.Warehouse__c == true) {
+      if (salon.Warehouse__c) {
         salonsAccsID.add(salon.Account__c);
         newWarehouses.add(salon);
       }
@@ -46,9 +46,7 @@ public with sharing class SalonController {
 
     for (Salon__c warehouse : newWarehouses) {
       if (numberOfWarehouses.get(warehouse.Account__c) > 1) {
-        warehouse.addError(
-          'There can be only one warehouse related to specific account'
-        );
+        warehouse.addError(Constant.salonControllerErrorMessageWarehouse);
       }
     }
   }
@@ -65,16 +63,6 @@ public with sharing class SalonController {
       return;
     }
 
-    Set<Id> salonsAccsID = new Set<Id>();
-    for (Salon__c salon : inSalons) {
-      salonsAccsID.add(salon.Account__c);
-    }
-    // Retrieve all related Warehouses
-    List<Salon__c> warehouses = [
-      SELECT Id, Account__c
-      FROM Salon__c
-      WHERE Warehouse__c = TRUE AND Account__c IN :salonsAccsID
-    ];
     //Check how many salons changed their status to closed and use them
     List<Salon__c> salonsClosing = new List<Salon__c>();
     for (Salon__c salon : inSalons) {
@@ -88,6 +76,18 @@ public with sharing class SalonController {
     if (salonsClosing.size() == 0) {
       return;
     }
+
+    // Retrieve all related Warehouses
+    Set<Id> salonsAccsID = new Set<Id>();
+    for (Salon__c salon : salonsClosing) {
+      salonsAccsID.add(salon.Account__c);
+    }
+
+    List<Salon__c> warehouses = [
+      SELECT Id, Account__c
+      FROM Salon__c
+      WHERE Warehouse__c = TRUE AND Account__c IN :salonsAccsID
+    ];
 
     //Retrieve all related vehicles from database
     List<Vehicle__c> vehicles = [
@@ -134,14 +134,29 @@ public with sharing class SalonController {
    * @date 16/06/2021
    * @description This method is used to update parking slots field
    **/
-  public static void updateParkingSlots(List<Salon__c> inSalons) {
+  public static void updateParkingSlots(
+    List<Salon__c> inSalons,
+    Map<Id, Salon__c> inSalonsOldMap
+  ) {
     if (inSalons == null) {
       return;
     }
+    List<Id> salonsSlotsChanged = new List<Id>();
+    for (Salon__c salon : inSalons) {
+      if (
+        inSalonsOldMap.get(salon.Id).Parking_slots__c > salon.Parking_slots__c
+      ) {
+        salonsSlotsChanged.add(salon.Id);
+      }
+    }
+    if (salonsSlotsChanged.size() == 0) {
+      return;
+    }
+
     List<Vehicle__c> vehicles = [
       SELECT Salon__c
       FROM Vehicle__c
-      WHERE Salon__c IN :inSalons
+      WHERE Salon__c IN :salonsSlotsChanged
     ];
     // Map parking slots taken by vehicles to Salon IDs
     Map<Id, Integer> parkingSlotsTaken = new Map<Id, Integer>();
@@ -157,7 +172,7 @@ public with sharing class SalonController {
     // Add error if there will be less places than before update
     for (Salon__c salon : inSalons) {
       if (salon.Parking_slots__c < parkingSlotsTaken.get(salon.Id)) {
-        salon.addError('There are more vehicles than desired parking spots');
+        salon.addError(Constant.salonControllerErrorMessageParking);
       }
     }
   }
