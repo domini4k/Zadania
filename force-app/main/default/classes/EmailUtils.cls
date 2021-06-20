@@ -32,12 +32,19 @@ public with sharing class EmailUtils {
       return;
     }
     List<String> toAddresses = new List<String>();
-    toAddresses.add('dominiak123@gmail.com');
+    toAddresses.add('example.mail@examplemail.com');
     Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
     String mssg = '';
+
+    List<Salon__c> salonNames = [
+      SELECT Name
+      FROM Salon__c
+      WHERE Id IN :inNewCarOffersSalon
+    ];
     for (Integer i = 0; i < inNewCarOffersID.size(); i++) {
-      mssg = mssg + inNewCarOffersID[i] + ' (' + inNewCarOffersSalon[i] + '); ';
+      mssg = mssg + inNewCarOffersID[i] + ' (' + salonNames[i].Name + '); ';
     }
+
     mail.setToAddresses(toAddresses);
     mail.setSubject('New Car Offers');
     mail.setPlainTextBody('New car offers have been created: ' + mssg);
