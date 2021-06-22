@@ -32,7 +32,7 @@ public with sharing class EmailUtils {
       return;
     }
     List<String> toAddresses = new List<String>();
-    toAddresses.add('example.mail@examplemail.com');
+    toAddresses.add(Constant.DIRECTOR_EMAIL);
     Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
     String mssg = '';
 
@@ -46,8 +46,8 @@ public with sharing class EmailUtils {
     }
 
     mail.setToAddresses(toAddresses);
-    mail.setSubject('New Car Offers');
-    mail.setPlainTextBody('New car offers have been created: ' + mssg);
+    mail.setSubject(Constant.EMAIL_SUBJECT);
+    mail.setPlainTextBody(Constant.EMAIL_BODY + mssg);
     Messaging.sendEmail(new List<Messaging.SingleEmailMessage>{ mail });
   }
 }

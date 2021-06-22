@@ -68,7 +68,7 @@ public with sharing class SalonController {
     for (Salon__c salon : inSalons) {
       if (
         inSalonsOldMap.get(salon.Id).Status__c != salon.Status__c &&
-        salon.Status__c == Constant.SALON_STATUS
+        salon.Status__c == Constant.SALON_STATUS_CLOSED
       ) {
         salonsClosing.add(salon);
       }

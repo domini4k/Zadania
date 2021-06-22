@@ -14,7 +14,7 @@ public with sharing class SalonControllerQue implements Queueable {
     for (Salon__c salon : inSalons) {
       if (
         inSalonsOldMap.get(salon.Id).Status__c != salon.Status__c &&
-        salon.Status__c == 'Closed'
+        salon.Status__c == Constant.SALON_STATUS_CLOSED
       ) {
         salonsClosing.add(salon);
       }
@@ -29,26 +29,28 @@ public with sharing class SalonControllerQue implements Queueable {
     List<Case> newCases = new List<Case>();
     for (Salon__c salon : salons) {
       Case newCase = new Case(
-        Subject = 'Renovation Case ' + salon.Name,
+        Subject = Constant.SUBJECT_TEXT + salon.Name,
         Salon__c = salon.Id
       );
       newCases.add(newCase);
     }
+
     Http server = new Http();
     HttpRequest req = new HttpRequest();
-    req.setEndpoint('https://jsonplaceholder.typicode.com/posts');
-    req.setMethod('POST');
+    req.setEndpoint(Constant.QUEUEABLE_ENDPOINT);
+    req.setMethod(Constant.QUEUEABLE_METHOD);
     req.setBody(JSON.serialize(newCases));
     HttpResponse resp = server.send(req);
-    Integer i = 0;
-    for (HttpResponse response : resp) {
-      if (response.getStatusCode() = 201) {
-        newCases[i].Status = 'Closed';
-      } else {
-        newCases[i].Status = 'Failed';
-        System.debug(LoggingLevel.ERROR, 'Bład połączenia');
+
+    if (resp.getStatusCode() == 201) {
+      for (Case newCase : newCases) {
+        newCase.Status = Constant.SALON_STATUS_CLOSED;
       }
-      i++;
+    } else {
+      for (Case newCase : newCases) {
+        newCase.Status = Constant.SALON_STATUS_FAILED;
+      }
+      System.debug(LoggingLevel.ERROR, Constant.QUEUEABLE_ERROR_MESSAGE);
     }
 
     insert newCases;
