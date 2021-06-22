@@ -46,7 +46,7 @@ public with sharing class SalonController {
 
     for (Salon__c warehouse : newWarehouses) {
       if (numberOfWarehouses.get(warehouse.Account__c) > 1) {
-        warehouse.addError(Constant.salonControllerErrorMessageWarehouse);
+        warehouse.addError(Constant.SALON_CONTROLLER_ERROR_MESSAGE_WAREHOUSE);
       }
     }
   }
@@ -68,7 +68,7 @@ public with sharing class SalonController {
     for (Salon__c salon : inSalons) {
       if (
         inSalonsOldMap.get(salon.Id).Status__c != salon.Status__c &&
-        salon.Status__c == 'Closed'
+        salon.Status__c == Constant.SALON_STATUS
       ) {
         salonsClosing.add(salon);
       }
@@ -172,7 +172,7 @@ public with sharing class SalonController {
     // Add error if there will be less places than before update
     for (Salon__c salon : inSalons) {
       if (salon.Parking_slots__c < parkingSlotsTaken.get(salon.Id)) {
-        salon.addError(Constant.salonControllerErrorMessageParking);
+        salon.addError(Constant.SALON_CONTROLLER_ERROR_MESSAGE_PARKING);
       }
     }
   }

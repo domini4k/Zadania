@@ -205,7 +205,7 @@ private with sharing class SalonControllerTest {
    **/
   @isTest
   static void testAddDuplicateWarehouse() {
-    String mssg = Constant.salonControllerErrorMessageWarehouse;
+    String mssg = Constant.SALON_CONTROLLER_ERROR_MESSAGE_WAREHOUSE;
     List<Account> accs = TestDataFactory.Accounts(160);
     List<Salon__c> warehouses = TestDataFactory.Salons(
       160,
@@ -241,7 +241,7 @@ private with sharing class SalonControllerTest {
    **/
   @isTest
   static void testAddDuplicateWarehouseScript() {
-    String mssg = Constant.salonControllerErrorMessageWarehouse;
+    String mssg = Constant.SALON_CONTROLLER_ERROR_MESSAGE_WAREHOUSE;
     List<Account> accs = TestDataFactory.Accounts(160);
     List<Salon__c> warehouses = TestDataFactory.Salons(
       80,
@@ -279,7 +279,7 @@ private with sharing class SalonControllerTest {
    **/
   @isTest
   static void setWrongNumberParkingSlots() {
-    String mssg = Constant.salonControllerErrorMessageParking;
+    String mssg = Constant.SALON_CONTROLLER_ERROR_MESSAGE_PARKING;
     List<Account> accs = TestDataFactory.Accounts(160);
     List<Salon__c> salons = TestDataFactory.Salons(
       160,

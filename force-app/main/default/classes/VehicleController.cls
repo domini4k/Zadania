@@ -126,7 +126,9 @@ public with sharing class VehicleController {
         //find vehicles related to salon where there is not enough place
         List<Vehicle__c> vehsList = vehiclesMappedToSalon.get(salon.Id);
         for (Vehicle__c vehicle : vehsList) {
-          vehicle.addError(Constant.vehicleControllerErrorMessage + salon.Name);
+          vehicle.addError(
+            Constant.VEHICLE_CONTROLLER_ERROR_MESSAGE + salon.Name
+          );
         }
       }
     }

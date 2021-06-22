@@ -48,7 +48,7 @@ public with sharing class OfferController {
         numberOfCarOffers.get(newCarOffer.Vehicle__c) > 1 &&
         !newCarOffer.Virtual__c
       ) {
-        newCarOffer.addError(Constant.offerControllerErrorMessage);
+        newCarOffer.addError(Constant.OFFER_CONTROLLER_ERROR_MESSAGE);
       }
     }
   }

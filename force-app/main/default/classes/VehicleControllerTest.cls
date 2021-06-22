@@ -62,7 +62,7 @@ private with sharing class VehicleControllerTest {
   @isTest
   static void addVehicle() {
     //create sample data
-    String mssg = Constant.vehicleControllerErrorMessage;
+    String mssg = Constant.VEHICLE_CONTROLLER_ERROR_MESSAGE;
     List<Account> accs = TestDataFactory.Accounts(160);
     List<Salon__c> salons = TestDataFactory.Salons(
       160,
