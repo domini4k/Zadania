@@ -3,6 +3,7 @@
  * @date 16/06/2021
  * @description This class is for preparing testing data
  **/
+@isTest
 public with sharing class TestDataFactory {
   /**
    * @author Pawel Dominiak <pawel.dominiak@accenture.com>
