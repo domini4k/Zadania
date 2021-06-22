@@ -67,12 +67,17 @@ private with sharing class VehicleControllerTest {
     List<Salon__c> salons = TestDataFactory.Salons(
       160,
       accs,
-      1,
+      2,
       false,
       'Open',
       true
     );
     List<Vehicle__c> vehs = TestDataFactory.Vehicles(
+      160,
+      salons,
+      '4GHBV58MNBV852'
+    );
+    List<Vehicle__c> vehsT = TestDataFactory.Vehicles(
       160,
       salons,
       '4GHBV58MNBV852'

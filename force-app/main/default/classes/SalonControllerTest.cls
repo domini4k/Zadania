@@ -296,6 +296,12 @@ private with sharing class SalonControllerTest {
       '4GHBV58MNBV852'
     );
 
+    List<Vehicle__c> vehsTest = TestDataFactory.Vehicles(
+      160,
+      salons,
+      '4GHBV58MNBV852'
+    );
+
     for (Salon__c salon : salons) {
       salon.Parking_slots__c = 0;
     }
