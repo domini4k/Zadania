@@ -5,6 +5,11 @@
  **/
 @isTest
 private with sharing class DeleteTelemertryBatchTest {
+  /**
+   * @author Pawel Dominiak <pawel.dominiak@accenture.com>
+   * @date 16/06/2021
+   * @description This method is for test setup 
+   **/
   @testSetup
   static void setup() {
     List<Vehicle__c> vehs = new List<Vehicle__c>();
@@ -25,8 +30,13 @@ private with sharing class DeleteTelemertryBatchTest {
     }
     insert tels;
   }
+  /**
+   * @author Pawel Dominiak <pawel.dominiak@accenture.com>
+   * @date 16/06/2021
+   * @description This method is actuall test
+   **/
   @isTest
-  static void test() {
+  static void checkIfDeleted() {
     Test.startTest();
     DeleteTelemetryBatch dtb = new DeleteTelemetryBatch();
     Id batchId = Database.executeBatch(dtb);
@@ -42,7 +52,7 @@ private with sharing class DeleteTelemertryBatchTest {
       vehsID.add(veh.Id);
     }
     System.assertEquals(
-      160,
+      0,
       [SELECT COUNT() FROM Telemetry__c WHERE Vehicle__c IN :vehsID]
     );
   }

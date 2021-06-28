@@ -24,7 +24,7 @@ public with sharing class EmailUtils {
    * @description This method is for sending asynchronous emails
    **/
   @future(callout=true)
-  public static void SendEmailAsync(
+  public static void sendEmailAsync(
     List<String> inNewCarOffersID,
     List<String> inNewCarOffersSalon
   ) {
@@ -34,16 +34,13 @@ public with sharing class EmailUtils {
     List<String> toAddresses = new List<String>();
     toAddresses.add(Constant.DIRECTOR_EMAIL);
     Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
-    String mssg = '';
-
-    List<Salon__c> salonNames = [
-      SELECT Name
-      FROM Salon__c
-      WHERE Id IN :inNewCarOffersSalon
-    ];
+    List<String> mssg = new List<String>();
+    
     for (Integer i = 0; i < inNewCarOffersID.size(); i++) {
-      mssg = mssg + inNewCarOffersID[i] + ' (' + salonNames[i].Name + '); ';
+      mssg.add(inNewCarOffersID[i]);
     }
+    String separator = ', ';
+    String.join(mssg, separator);
 
     mail.setToAddresses(toAddresses);
     mail.setSubject(Constant.EMAIL_SUBJECT);

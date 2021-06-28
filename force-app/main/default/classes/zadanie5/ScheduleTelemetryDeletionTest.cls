@@ -5,6 +5,11 @@
  **/
 @isTest
 public with sharing class ScheduleTelemetryDeletionTest {
+  /**
+ * @author Pawel Dominiak <pawel.dominiak@accenture.com>
+ * @date 16/06/2021
+ * @description This method is for scheduling batch job
+ **/
   @isTest
   static void testScheduler() {
     List<AsyncApexJob> jobsBefore = [
@@ -21,9 +26,6 @@ public with sharing class ScheduleTelemetryDeletionTest {
       new ScheduleTelemetryDeletion()
     );
     Test.stopTest();
-
-    //Czy poniższe stringi również należy umieścic w klasie constant?
-
     // Check schedulable is in the job list
     List<AsyncApexJob> jobsScheduled = [
       SELECT Id, ApexClassID, ApexClass.Name, Status, JobType

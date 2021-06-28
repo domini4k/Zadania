@@ -6,7 +6,7 @@
 public with sharing class DeleteTelemetryBatch implements Database.Batchable<sObject> {
   public Database.QueryLocator start(Database.BatchableContext bc) {
     return Database.getQueryLocator(
-      [SELECT ID FROM Telemetry__c WHERE Created__c < yesterday]
+      [SELECT ID FROM Telemetry__c WHERE CreatedDate > yesterday]
     );
   }
   public void execute(Database.BatchableContext bc, List<Telemetry__c> scope) {
@@ -26,6 +26,6 @@ public with sharing class DeleteTelemetryBatch implements Database.Batchable<sOb
       FROM AsyncApexJob
       WHERE Id = :bc.getJobId()
     ];
-    System.debug(job);
+    System.debug(LoggingLevel.FINE, job);
   }
 }

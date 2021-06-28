@@ -4,8 +4,8 @@
  * @description This class is for scheduling batch job
  **/
 global class ScheduleTelemetryDeletion implements Schedulable {
-  global void execute(SchedulableContext ctx) {
-    DeleteTelemetryBatch b = new DeleteTelemetryBatch();
-    database.executebatch(b);
+  global void execute(SchedulableContext context) {
+    DeleteTelemetryBatch deleteTelBatch = new DeleteTelemetryBatch();
+    database.executebatch(deleteTelBatch);
   }
 }
