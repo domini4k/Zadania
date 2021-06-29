@@ -1,20 +1,19 @@
 
 @isTest
 private class UpdateCheckboxTest {
-    
+    @isTest
     static void testUpdateCheckbox() {
-        // query for test data to pass to queueable class
         List<String> vehsIds = new List<String>();
         for (Integer i=0;i<160;i++){
             vehsIds.add('Id'+i);
         }
-        // startTest/stopTest block to force async processes to run
-        Test.setMock(HttpCalloutMock.class, new UpdateCheckboxRESTAPIMock());
-        Test.startTest();
-        UpdateCheckboxRESTAPI.vehicles(vehsIds);
-        Test.stopTest();
+        Test.setMock(HttpCalloutMock.class, new UpdateCheckboxMock());
         
-        // Validate the job ran. Check if record have correct parentId now
-        System.assertEquals(0, [select count() from Vehicle__c where Serial_number__c = '4GHBV58MNGV852369']);
+        HttpResponse response = UpdateCheckboxRESTAPI.vehicles(vehsIds);
+        
+        String contentType = response.getHeader('Content-Type');
+        System.assert(contentType == 'application/json');
+        System.assertEquals(200, response.getStatusCode());
+        
     }
 }
