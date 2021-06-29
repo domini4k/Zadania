@@ -47,7 +47,7 @@ public with sharing class UpdateCheckboxRESTAPI {
    * @date 16/06/2021
    * @description This method is for sending request to change checkbox
    **/
-  public static List<String> vehicles(List<String> inVehiclesId) {
+  public static HttpResponse vehicles(List<String> inVehiclesId) {
     UpdateCheckboxRESTAPI jobAccessToken = new UpdateCheckboxRESTAPI();
     String accessToken = jobAccessToken.ReturnAccessToken(jobAccessToken);
 
@@ -61,6 +61,6 @@ public with sharing class UpdateCheckboxRESTAPI {
     req2.setMethod('POST');
     req2.setEndpoint(endPoint);
     HttpResponse res2 = h2.send(req2);
-    return inVehiclesId;
+    return res2;
   }
 }
