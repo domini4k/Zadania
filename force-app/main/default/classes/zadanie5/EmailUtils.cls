@@ -9,14 +9,12 @@ public with sharing class EmailUtils {
    * @date 16/06/2021
    * @description This method is for sending asynchronous emails
    **/
-  public static void SendEmail(List<Car_Posting__c> inNewCarOffers) {
+  public static void sendEmail(List<Car_Posting__c> inNewCarOffers) {
     List<String> newCarOffersID = new List<String>();
-    List<String> newCarOffersSalon = new List<String>();
     for (Car_Posting__c caroffer : inNewCarOffers) {
       newCarOffersID.add(carOffer.Id);
-      newCarOffersSalon.add(caroffer.Salon__c);
     }
-    SendEmailAsync(newCarOffersID, newCarOffersSalon);
+    SendEmailAsync(newCarOffersID);
   }
   /**
    * @author Pawel Dominiak <pawel.dominiak@accenture.com>
@@ -25,10 +23,9 @@ public with sharing class EmailUtils {
    **/
   @future(callout=true)
   public static void sendEmailAsync(
-    List<String> inNewCarOffersID,
-    List<String> inNewCarOffersSalon
+    List<String> inNewCarOffersID
   ) {
-    if (inNewCarOffersID == null || inNewCarOffersSalon == null) {
+    if (inNewCarOffersID == null) {
       return;
     }
     List<String> toAddresses = new List<String>();
@@ -40,11 +37,11 @@ public with sharing class EmailUtils {
       mssg.add(inNewCarOffersID[i]);
     }
     String separator = ', ';
-    String.join(mssg, separator);
+    String message = String.join(mssg, separator);
 
     mail.setToAddresses(toAddresses);
     mail.setSubject(Constant.EMAIL_SUBJECT);
-    mail.setPlainTextBody(Constant.EMAIL_BODY + mssg);
+    mail.setPlainTextBody(Constant.EMAIL_BODY + message);
     Messaging.sendEmail(new List<Messaging.SingleEmailMessage>{ mail });
   }
 }

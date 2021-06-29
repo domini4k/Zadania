@@ -34,7 +34,12 @@ public with sharing class SalonControllerQue implements Queueable {
         Salon__c = salon.Id
       );
       newCases.add(newCase);
-      newCasesID.add(newCase.Id);
+      
+    }
+    insert newCases;
+
+    for (Case c : newCases){
+      newCasesID.add(c.Id);
     }
 
     Http server = new Http();
@@ -55,6 +60,6 @@ public with sharing class SalonControllerQue implements Queueable {
       System.debug(LoggingLevel.ERROR, Constant.QUEUEABLE_ERROR_MESSAGE);
     }
 
-    insert newCases;
+    update newCases;
   }
 }

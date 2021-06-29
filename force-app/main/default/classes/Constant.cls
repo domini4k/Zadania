@@ -5,6 +5,7 @@ public with sharing class Constant {
   public static final String VEHICLE_CONTROLLER_ERROR_MESSAGE = 'There are not enough parking spots for vehicles in this salon ';
   public static final String SALON_STATUS_CLOSED = 'Closed';
   public static final String SALON_STATUS_FAILED = 'Failed';
+  public static final String SALON_STATUS_OPEN = 'Open';
   public static final String SUBJECT_TEXT = 'Renovation Case ';
   public static final String QUEUEABLE_ENDPOINT = 'https://jsonplaceholder.typicode.com/posts';
   public static final String QUEUEABLE_METHOD = 'POST';

@@ -9,7 +9,7 @@ private class EmailUtilsTest {
       accs,
       100,
       false,
-      'Open',
+      Constant.SALON_STATUS_OPEN,
       true
     );
     List<Vehicle__c> vehs = TestDataFactory.Vehicles(
