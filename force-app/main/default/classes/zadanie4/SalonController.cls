@@ -76,6 +76,9 @@ public with sharing class SalonController {
     if (salonsClosing.size() == 0) {
       return;
     }
+    SalonControllerQue job = new SalonControllerQue();
+    job.salons = salonsClosing;
+    ID jobID = System.enqueueJob(job);
 
     // Retrieve all related Warehouses
     Set<Id> salonsAccsID = new Set<Id>();
