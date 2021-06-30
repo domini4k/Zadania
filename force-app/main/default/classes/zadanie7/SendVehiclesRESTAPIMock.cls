@@ -1,3 +1,8 @@
+/**
+ * @author Pawel Dominiak <pawel.dominiak@accenture.com>
+ * @date 16/06/2021
+ * @description This class is for mock the response
+ **/
 @isTest
 global class SendVehiclesRESTAPIMock implements HttpCalloutMock
 {

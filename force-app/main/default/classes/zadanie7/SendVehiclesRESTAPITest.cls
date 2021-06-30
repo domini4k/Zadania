@@ -1,5 +1,15 @@
+/**
+ * @author Pawel Dominiak <pawel.dominiak@accenture.com>
+ * @date 16/06/2021
+ * @description This class is for test RESTAPI class
+ **/
 @isTest
 private class SendVehiclesRESTAPITest {
+    /**
+   * @author Pawel Dominiak <pawel.dominiak@accenture.com>
+   * @date 16/06/2021
+   * @description Test Setup
+   **/
     @testSetup
     static void setupPost() {
         List<Account> accs = TestDataFactory.Accounts(160);
@@ -8,7 +18,7 @@ private class SendVehiclesRESTAPITest {
       accs,
       100,
       false,
-      'Open',
+      Constant.SALON_STATUS_OPEN,
       true
     );
     List<Vehicle__c> vehs = new List<Vehicle__c>();
@@ -24,6 +34,11 @@ private class SendVehiclesRESTAPITest {
     }
     insert vehs;
     }
+    /**
+   * @author Pawel Dominiak <pawel.dominiak@accenture.com>
+   * @date 16/06/2021
+   * @description Test Setup
+   **/
     static testmethod void testQueueable() {
         // query for test data to pass to queueable class
         List<Vehicle__c> vehs = [SELECT ID FROM Vehicle__c WHERE Serial_number__c = '4GHBV58MNGV852369'];
@@ -36,7 +51,6 @@ private class SendVehiclesRESTAPITest {
       System.assert(results[i].isSuccess());
       System.assert(results[i].getErrors().size() == 0);
     }
-        // Validate the job ran. Check if record have correct parentId now
         System.assertEquals(0, [select count() from Vehicle__c where Serial_number__c = '4GHBV58MNGV852369']);
     }
 }

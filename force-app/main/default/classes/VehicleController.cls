@@ -26,7 +26,7 @@ public with sharing class VehicleController {
       }
     }
     //Send vehicles to another company
-    if (vehiclesToTransport != null) {
+    if (!vehiclesToTransport.isEmpty()) {
       SendVehicleUsingRESTAPI job = new SendVehicleUsingRESTAPI();
       job.vehicles = vehiclesToTransport;
       ID jobID = System.enqueueJob(job);

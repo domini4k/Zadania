@@ -5,7 +5,6 @@
  **/
 public class SendVehicleUsingRESTAPI implements Queueable, Database.AllowsCallouts {
   public List<Vehicle__c> vehicles;
-  //czy to mozna hardcodowac?
   private final String clientId = '3MVG9SOw8KERNN08uhAwkhN5G97pi5WwZQ_FT4yjfRfEuwGz_EvqcOJuz0wr52jI.mJXaqoyVcsGKUAJ5oZvy';
   private final String clientSecret = 'D8AC614EB5C9C3C35864780C7C7D6098D5DD3CB5A3F6C292FF015BCE66F32F0C';
   private final String username = 'dominiak123@wise-moose-72zl27.com';

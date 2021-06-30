@@ -5,10 +5,14 @@
  **/
 @RestResource(urlMapping='/v1/RetrieveObjects/*')
 global with sharing class RetrieveObjects {
+  /**
+   * @author Pawel Dominiak <pawel.dominiak@accenture.com>
+   * @date 16/06/2021
+   * @description Get method
+   **/
   @HttpGet
   global static String retrieve() {
     RestRequest req = RestContext.request;
-    RestResponse res = Restcontext.response;
     Map<String, String> headers = req.headers;
     
     String objectName = headers.get('ObjectName');
@@ -21,13 +25,10 @@ global with sharing class RetrieveObjects {
     String result;
     
     if (objectName == 'Accounts'){   
-
         List<Account> listAccount =[Select Name from Account];
         result = JSON.serialize(listAccount);
-        
     }
     else {
-        
         if (objectName == 'Salons'){
             List<Salon__c> listSalons = [SELECT Name FROM Salon__c WHERE Account__c = :parentName];
             result = JSON.serialize(listSalons);
@@ -37,7 +38,6 @@ global with sharing class RetrieveObjects {
             result = JSON.serialize(listVehicles);
         }
     }
-    System.debug(result);
     return result;
   }
 }

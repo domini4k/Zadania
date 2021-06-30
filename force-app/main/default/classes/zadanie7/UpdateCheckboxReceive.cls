@@ -5,11 +5,16 @@
  **/
 @RestResource(urlMapping='/v1/postVehiclesUpdate/*')
 global with sharing class UpdateCheckboxReceive {
+  /**
+ * @author Pawel Dominiak <pawel.dominiak@accenture.com>
+ * @date 16/06/2021
+ * @description Post method
+ **/
   @HttpPost
   global static void receiveVeh() {
     RestRequest vehicleRequest = RestContext.request;
     String requestBody = vehicleRequest.requestBody.toString();
-    //Tranform data from body to list of valid IDs
+    //Transform data from body to list of valid IDs
     List<Id> vehiclesToUpdateIDs = new List<Id>();
     List<Object> vehiclesList = (List<Object>) JSON.deserializeUntyped(
       requestBody
