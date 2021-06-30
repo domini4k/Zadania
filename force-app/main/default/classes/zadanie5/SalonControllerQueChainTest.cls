@@ -13,8 +13,7 @@ public with sharing class SalonControllerQueChainTest {
     insert casesTest;
     Test.setMock(HttpCalloutMock.class, new SalonControllerQueChainMock()); 
 
-    SalonControllerQueChain job = new SalonControllerQueChain();
-    job.inCases = casesTest;
+    SalonControllerQueChain job = new SalonControllerQueChain(casesTest);
     // startTest/stopTest block to force async processes to run
     Test.startTest();
     System.enqueueJob(job);

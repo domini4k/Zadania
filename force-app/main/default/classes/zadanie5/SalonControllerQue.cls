@@ -20,9 +20,8 @@ public with sharing class SalonControllerQue implements Queueable {
     }
     insert newCases;
     if(!Test.isRunningTest()) {
-      SalonControllerQueChain job = new SalonControllerQueChain();
-      job.inCases = newCases;
-      ID jobIDChain = System.enqueueJob(job);
+      SalonControllerQueChain job = new SalonControllerQueChain(newCases);
+      System.enqueueJob(job);
 
     }
   }
