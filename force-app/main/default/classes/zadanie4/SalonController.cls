@@ -68,7 +68,7 @@ public with sharing class SalonController {
     for (Salon__c salon : inSalons) {
       if (
         inSalonsOldMap.get(salon.Id).Status__c != salon.Status__c &&
-        salon.Status__c == Constant.SALON_STATUS
+        salon.Status__c == Constant.SALON_STATUS_CLOSED
       ) {
         salonsClosing.add(salon);
       }
@@ -76,6 +76,9 @@ public with sharing class SalonController {
     if (salonsClosing.size() == 0) {
       return;
     }
+    SalonControllerQue job = new SalonControllerQue();
+    job.salons = salonsClosing;
+    ID jobID = System.enqueueJob(job);
 
     // Retrieve all related Warehouses
     Set<Id> salonsAccsID = new Set<Id>();
