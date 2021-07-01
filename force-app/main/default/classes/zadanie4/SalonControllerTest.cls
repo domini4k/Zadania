@@ -57,7 +57,7 @@ private with sharing class SalonControllerTest {
     );
 
     for (Salon__c salon : salons) {
-      salon.Status__c = 'Closed';
+      salon.Status__c = Constant.SALON_STATUS_CLOSED;
     }
 
     //Start test
