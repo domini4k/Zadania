@@ -4,11 +4,11 @@
  * @description This class is for updating checkbox in another org
  **/
 public with sharing class UpdateCheckboxRESTAPI {
-  private final String clientId = '3MVG9SOw8KERNN092PrKygczI_Uh6NRAls6AVkV7rUyyXA9Waqjd23oVTIrd7rXaVQcl9oJtNO7zlPqNZ3LOz';
-  private final String clientSecret = 'DC167EA1890CD029730B596450F872C986248916618B494BE7F5BBF5FB47F1CA';
-  private final String username = 'dominiak123@wise-shark-ppge52.com';
-  private final String password = 'Podkladka1';
-  public class deserializeResponse {
+  static String clientId = Constant.CLIENT_ID;
+  static String clientSecret = Constant.CLIENT_SECRET;
+  static String username = Constant.LOGIN;
+  static String password = Constant.PASSWORD;
+  public class DeserializeResponse {
     public String id;
     public String access_token;
   }
@@ -17,7 +17,7 @@ public with sharing class UpdateCheckboxRESTAPI {
    * @date 16/06/2021
    * @description This method is for returning acccess token
    **/
-  public String ReturnAccessToken(UpdateCheckboxRESTAPI jobAccessToken) {
+  public String returnAccessToken() {
     String reqbody =
       'grant_type=password' +
       '&client_id=' +
@@ -28,17 +28,15 @@ public with sharing class UpdateCheckboxRESTAPI {
       username +
       '&password=' +
       password;
-    Http h = new Http();
+    Http httpServer = new Http();
     HttpRequest req = new HttpRequest();
     req.setBody(reqbody);
-    req.setMethod('POST');
-    req.setEndpoint(
-      'https://wise-shark-ppge52-dev-ed.my.salesforce.com/services/oauth2/token'
-    );
-    HttpResponse res = h.send(req);
+    req.setMethod(Constant.REST_POST);
+    req.setEndpoint(Constant.ENDPOINT+'oauth2/token');
+    HttpResponse res = httpServer.send(req);
     deserializeResponse response = (deserializeResponse) JSON.deserialize(
       res.getbody(),
-      deserializeResponse.class
+      DeserializeResponse.class
     );
     return response.access_token;
   }
@@ -48,19 +46,18 @@ public with sharing class UpdateCheckboxRESTAPI {
    * @description This method is for sending request to change checkbox
    **/
   public static HttpResponse vehicles(List<String> inVehiclesId) {
-    UpdateCheckboxRESTAPI jobAccessToken = new UpdateCheckboxRESTAPI();
-    String accessToken = jobAccessToken.ReturnAccessToken(jobAccessToken);
+    String accessToken = returnAccessToken();
 
-    String endPoint = 'https://wise-shark-ppge52-dev-ed.my.salesforce.com/services/apexrest/v1/postVehiclesUpdate/';
-    Http h2 = new Http();
-    HttpRequest req2 = new HttpRequest();
-    req2.setHeader('Authorization', 'Bearer ' + accessToken);
-    req2.setHeader('Content-Type', 'application/json');
-    req2.setHeader('accept', 'application/json');
-    req2.setBody(JSON.serialize(inVehiclesId));
-    req2.setMethod('POST');
-    req2.setEndpoint(endPoint);
-    HttpResponse res2 = h2.send(req2);
-    return res2;
+    String endPoint = Constant.ENDPOINT + 'apexrest/v1/postVehiclesUpdate/';
+    Http httpServer = new Http();
+    HttpRequest req = new HttpRequest();
+    req.setHeader(Constant.AUTHORIZATION, 'Bearer ' + accessToken);
+    req.setHeader(Constant.CONTENT_TYPE, Constant.APPLICATION);
+    req.setHeader(Constant.ACCEPT, Constant.APPLICATION);
+    req.setBody(JSON.serialize(inVehiclesId));
+    req.setMethod(Constant.REST_POST);
+    req.setEndpoint(endPoint);
+    HttpResponse res = httpServer.send(req);
+    return res;
   }
 }

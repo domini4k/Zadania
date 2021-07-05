@@ -5,6 +5,11 @@
  **/
 @RestResource(urlMapping='/v1/postVehiclesDel/*')
 global with sharing class ImportVehicles {
+    /**
+   * @author Pawel Dominiak <pawel.dominiak@accenture.com>
+   * @date 16/06/2021
+   * @description This method is for sending Vehicles to another company using REST API
+   **/
   @HttpPost
   global static void receiveVeh() {
     RestRequest vehicleRequest = RestContext.request;

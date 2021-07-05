@@ -16,10 +16,10 @@ public with sharing class RetrieveObjectsTest {
     List<Account> accs = TestDataFactory.Accounts(160);
     
     RestRequest req = new RestRequest(); 
-    req.requestURI = 'https://wise-shark-ppge52-dev-ed.my.salesforce.com/services/apexrest/v1/RetrieveObjects/';
-    req.addHeader('Content-Type', 'application/json');
-    req.httpMethod = 'GET';
-    req.addHeader('ObjectName', 'Accounts');
+    req.requestURI = Constant.ENDPOINT_SHARK + 'apexrest/v1/RetrieveObjects/';
+    req.addHeader(Constant.CONTENT_TYPE, Constant.APPLICATION);
+    req.httpMethod = Constant.REST_GET;
+    req.addHeader(Constant.OBJECT_NAME, Constant.ACCOUNTS);
     RestContext.request = req;
 
     Test.startTest();
@@ -55,11 +55,11 @@ public with sharing class RetrieveObjectsTest {
     insert salons;
     
     RestRequest req = new RestRequest(); 
-    req.requestURI = 'https://wise-shark-ppge52-dev-ed.my.salesforce.com/services/apexrest/v1/RetrieveObjects/';
-    req.addHeader('Content-Type', 'application/json');
-    req.httpMethod = 'GET';
-    req.addHeader('ObjectName', 'Salons');
-    req.addHeader('ParentID', acc.Id);
+    req.requestURI = Constant.ENDPOINT_SHARK + 'apexrest/v1/RetrieveObjects/';
+    req.addHeader(Constant.CONTENT_TYPE, Constant.APPLICATION);
+    req.httpMethod = Constant.REST_GET;
+    req.addHeader(Constant.OBJECT_NAME, Constant.SALONS);
+    req.addHeader(Constant.PARENT_ID, acc.Id);
     RestContext.request = req;
 
     Test.startTest();
@@ -102,11 +102,11 @@ public with sharing class RetrieveObjectsTest {
     insert vehs;
     
     RestRequest req = new RestRequest(); 
-    req.requestURI = 'https://wise-shark-ppge52-dev-ed.my.salesforce.com/services/apexrest/v1/RetrieveObjects/';
-    req.addHeader('Content-Type', 'application/json');
-    req.httpMethod = 'GET';
-    req.addHeader('ObjectName', 'Vehicles');
-    req.addHeader('ParentID', salon.Id);
+    req.requestURI = Constant.ENDPOINT_SHARK + 'apexrest/v1/RetrieveObjects/';
+    req.addHeader(Constant.CONTENT_TYPE, Constant.APPLICATION);
+    req.httpMethod = Constant.REST_GET;
+    req.addHeader(Constant.OBJECT_NAME, Constant.VEHICLES);
+    req.addHeader(Constant.PARENT_ID, salon.Id);
     RestContext.request = req;
 
     Test.startTest();

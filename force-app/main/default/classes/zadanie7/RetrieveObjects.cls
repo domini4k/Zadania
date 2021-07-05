@@ -15,25 +15,24 @@ global with sharing class RetrieveObjects {
     RestRequest req = RestContext.request;
     Map<String, String> headers = req.headers;
     
-    String objectName = headers.get('ObjectName');
-    String parentID;
+    String objectName = headers.get(Constant.OBJECT_NAME);
+    String parentID = headers.get(Constant.PARENT_ID);
     ID parentName;
-    if (objectName != 'Accounts'){
-      parentID = headers.get('ParentID');
+    if (objectName != Constant.ACCOUNTS && parentID != null){
       parentName = Id.valueOf(parentID);
     }
     String result;
     
-    if (objectName == 'Accounts'){   
+    if (objectName == Constant.ACCOUNTS){   
         List<Account> listAccount =[Select Name from Account];
         result = JSON.serialize(listAccount);
     }
     else {
-        if (objectName == 'Salons'){
+        if (objectName == Constant.SALONS){
             List<Salon__c> listSalons = [SELECT Name FROM Salon__c WHERE Account__c = :parentName];
             result = JSON.serialize(listSalons);
         }
-        else if (objectName == 'Vehicles'){
+        else if (objectName == Constant.VEHICLES){
             List<Vehicle__c> listVehicles = [SELECT Brand__c, Car_model__c FROM Vehicle__c WHERE Salon__c = :parentName];
             result = JSON.serialize(listVehicles);
         }

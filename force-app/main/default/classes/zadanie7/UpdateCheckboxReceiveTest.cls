@@ -40,9 +40,9 @@ public with sharing class UpdateCheckboxReceiveTest {
 
     RestRequest req = new RestRequest(); 
     req.requestBody = Blob.valueOf(JSON.serialize(vehsId));
-    req.requestURI = 'https://wise-shark-ppge52-dev-ed.my.salesforce.com/services/apexrest/v1/postVehiclesUpdate/';
-    req.addHeader('Content-Type', 'application/json');
-    req.httpMethod = 'POST';
+    req.requestURI = Constant.ENDPOINT_SHARK + 'apexrest/v1/postVehiclesUpdate/';
+    req.addHeader(Constant.CONTENT_TYPE, Constant.APPLICATION);
+    req.httpMethod = Constant.REST_POST;
     RestContext.request = req;
 
     Test.startTest();
