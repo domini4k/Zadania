@@ -19,7 +19,8 @@ private with sharing class VehicleControllerTest {
       Vehicle__c veh = new Vehicle__c(
         Brand__c = 'Brand' + i,
         Car_model__c = 'Car Model' + i,
-        Serial_number__c = '4GHBV58MNBV852852'
+        Serial_number__c = '4GHBV58MNBV852852',
+        Transfer_to_another_company__c = false
       );
       vehs.add(veh);
     }

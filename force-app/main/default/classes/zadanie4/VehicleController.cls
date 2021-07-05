@@ -13,9 +13,23 @@ public with sharing class VehicleController {
     if (inVehicles == null) {
       return;
     }
+    //Check which vehicles to delete and which send to antoher company
+    List<Vehicle__c> vehiclesToTransport = new List<Vehicle__c>();
+    List<Vehicle__c> vehiclesToDelete = new List<Vehicle__c>();
     List<Id> vehiclesID = new List<Id>();
     for (Vehicle__c vehicle : inVehicles) {
-      vehiclesID.add(vehicle.Id);
+      if (vehicle.Transfer_to_another_company__c == true) {
+        vehiclesToTransport.add(vehicle);
+      } else {
+        vehiclesID.add(vehicle.Id);
+        vehiclesToDelete.add(vehicle);
+      }
+    }
+    //Send vehicles to another company
+    if (!vehiclesToTransport.isEmpty()) {
+      SendVehicleUsingRESTAPI job = new SendVehicleUsingRESTAPI();
+      job.vehicles = vehiclesToTransport;
+      ID jobID = System.enqueueJob(job);
     }
     //Retrieve all related telemetry data
     List<Telemetry__c> data = [
@@ -26,7 +40,7 @@ public with sharing class VehicleController {
 
     List<Case> newCases = new List<Case>();
 
-    for (Vehicle__c vehicle : inVehicles) {
+    for (Vehicle__c vehicle : vehiclesToDelete) {
       //Create case for each vehicle
       Case newCase = new Case(
         Status = 'New',

@@ -15,4 +15,21 @@ public with sharing class Constant {
   public static final String EMAIL_BODY = 'New car offers have been created: ';
   public static final String CRON_EXPR = '0 0 0 15 3 ? 2022';
   public static final String JOB_SCHEDULE_TITLE = 'TelemetryDeletionTest';
+  public static final String OBJECT_NAME = 'ObjectName';
+  public static final String ACCOUNTS = 'Accounts';
+  public static final String SALONS = 'Salons';
+  public static final String VEHICLES = 'Vehicles';
+  public static final String PARENT_ID = 'ParentID';
+    public static final String ENDPOINT_SHARK = 'https://wise-shark-ppge52-dev-ed.my.salesforce.com/services/';
+    public static final String ENDPOINT_MOOSE = 'https://wise-moose-72zl27-dev-ed.my.salesforce.com/services/';
+    public static final String AUTHORIZATION = 'Authorization';
+    public static final String CONTENT_TYPE = 'Content-Type';
+    public static final String APPLICATION = 'application/json';
+    public static final String ACCEPT = 'accept';
+    public static final String REST_GET = 'GET';
+    public static final String REST_POST = 'POST';
+    public static final String CLIENT_ID = '3MVG9SOw8KERNN08uhAwkhN5G97pi5WwZQ_FT4yjfRfEuwGz_EvqcOJuz0wr52jI.mJXaqoyVcsGKUAJ5oZvy';
+    public static final String CLIENT_SECRET ='D8AC614EB5C9C3C35864780C7C7D6098D5DD3CB5A3F6C292FF015BCE66F32F0C';
+    public static final String LOGIN = 'dominiak123@wise-moose-72zl27.com';
+    public static final String PASSWORD = 'Podkladka1';
 }
